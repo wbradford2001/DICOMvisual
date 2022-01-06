@@ -57,12 +57,12 @@ def load_file():
     Axial.display_image()
 
     remove_items([no_data, no_pixel_array])
-    IdentifyTB.show_self(display_strings['0008'])
-    PatientTB.show_self(display_strings['0010'])
-    AquisitionTB.show_self(display_strings['0018'])
-    RelationshipTB.show_self(display_strings['0020'])
-    ImagePresentationTB.show_self(display_strings['0028'])
-    TextTB.show_self(display_strings['0040'])
+    IdentifyTB.show_self(display_strings['0']['0008'])
+    PatientTB.show_self(display_strings['0']['0010'])
+    AquisitionTB.show_self(display_strings['0']['0018'])
+    RelationshipTB.show_self(display_strings['0']['0020'])
+    ImagePresentationTB.show_self(display_strings['0']['0028'])
+    TextTB.show_self(display_strings['0']['0040'])
 
 def view_full_df():
     full_df_window = TopLevelWindow.top_window(root=root, width=800, height=800, title = "Full Data Frame")
