@@ -5,6 +5,7 @@ class top_window:
         self.root = root
         self.height = height
         self.width = width
+        self.color= color
         self.toplevel = tk.Toplevel(self.root)
         self.toplevel.geometry("{}x{}".format(self.width,self.height))
         self.toplevel.title(title)

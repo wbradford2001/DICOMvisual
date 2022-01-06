@@ -1,11 +1,12 @@
 import tkinter as tk
 import numpy as np
 
-def load_df_data(dfs):
+def load_df_data(dfs, loading_bar):
 
     Axial_arr = []
     master_dict_of_catagories = {}
     for index, dataframe in enumerate(dfs):
+        loading_bar.increase_width()
         master_dict_of_catagories[str(index)] = {}
         for element in dataframe:
             if (str(element.tag)[1:5]) not in master_dict_of_catagories[str(index)]:
