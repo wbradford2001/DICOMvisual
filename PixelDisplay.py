@@ -6,7 +6,8 @@ class pixel_display:
     dpi = 50
     width = 300
     height = 300
-    def __init__(self, root, title, arr, aspect, relposx, relposy):
+    def __init__(self, root, title, arr, aspect, relposx, relposy, fontstyle):
+        self.fontstyle = fontstyle
         self.relposx = relposx
         self.relposy = relposy
         self.root = root
@@ -23,7 +24,20 @@ class pixel_display:
         self.ax1.set_aspect(self.aspect)
         self.tkcanvas = FigureCanvasTkAgg(self.figure1, self.root)
         self.tkcanvas.get_tk_widget().place(relx = self.relposx, rely = self.relposy, anchor = 'center', width = pixel_display.width, height = pixel_display.height)
-    def display_image(self):
+
+
+        self.currentim = tk.IntVar()
+        self.currentim.set(100)
+        self.scale = tk.Scale(self.root, variable = self.currentim, background = 'black', fg = 'black', from_ = 0, to = self.arr.shape[0], command = self.display_image)
+        self.scale.place(relx = self.relposx + 0.15, rely = self.relposy, anchor= 'center', height = pixel_display.height)
+
+        self.title_text = tk.Label(self.root, text = self.title, bg = 'black', fg = 'white', font = (self.fontstyle, 14))
+        self.title_text.place(relx = self.relposx, rely = self.relposy - 0.2, anchor = 'center')
+    def display_image(self, image):
+        image = self.currentim.get()
         self.ax1.cla()
-        self.ax1.imshow(self.arr, cmap = 'bone')
+        try:
+            self.ax1.imshow(self.arr[int(image)], cmap = 'bone')
+        except:
+            self.ax1.imshow(self.arr[-1], cmap = 'bone')
         self.tkcanvas.draw()
