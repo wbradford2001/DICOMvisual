@@ -19,3 +19,5 @@ class data_window:
         self.text_box_label = tk.Text(self.root, bg = 'black', fg = 'white', font = (self.fontstyle, 8), wrap = 'word',bd = 0, relief = 'flat', height= data_window.text_box_height, width = data_window.width)
         self.text_box_label.insert(tk.END, text)
         self.text_box_label.place(relx = self.relposx, rely = self.relposy, anchor = 'center', width = data_window.width, height = data_window.text_box_height)
+    def update(self, text):
+        self.text_box_label.config(text = text)

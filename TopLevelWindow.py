@@ -10,6 +10,7 @@ class top_window:
         self.toplevel.geometry("{}x{}".format(self.width,self.height))
         self.toplevel.title(title)
         self.toplevel.configure(bg = color)
+        self.toplevel.resizable(False, False) 
         rootx = self.root.winfo_x()
         rooty = self.root.winfo_y()
         self.toplevel.geometry("+%d+%d" % ((

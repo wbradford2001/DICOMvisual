@@ -3,10 +3,10 @@ import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
 class pixel_display:
-    dpi = 50
+    dpi =500
     width = 250
     height = 250
-    def __init__(self, root, title, arr, aspect, relposx, relposy, fontstyle, image_text_label = None, image_names = None):
+    def __init__(self, root, title, arr, aspect, relposx, relposy, fontstyle, image_text_label = None, image_names = None, display_display_strings_func = None):
         self.fontstyle = fontstyle
         self.relposx = relposx
         self.relposy = relposy
@@ -24,6 +24,8 @@ class pixel_display:
         self.ax1.set_aspect(self.aspect)
         self.tkcanvas = FigureCanvasTkAgg(self.figure1, self.root)
         self.tkcanvas.get_tk_widget().place(relx = self.relposx, rely = self.relposy, anchor = 'center', width = pixel_display.width, height = pixel_display.height)
+ 
+
 
 
         self.currentim = tk.IntVar()
@@ -38,6 +40,7 @@ class pixel_display:
 
         self.image_text_label = image_text_label
         self.image_names = image_names
+        self.display_display_strings_func = display_display_strings_func
     def display_image(self, image):
         image = self.currentim.get()
         self.ax1.cla()
@@ -59,4 +62,6 @@ class pixel_display:
             try:
                 self.image_text_label.config(text = self.image_names[int(self.currentim.get())])
             except:
-                self.image_text_label.config(text = self.image_names[-1])                
+                self.image_text_label.config(text = self.image_names[-1])   
+
+            self.display_display_strings_func(self.currentim.get())             
