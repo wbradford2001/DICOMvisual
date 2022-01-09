@@ -1,10 +1,12 @@
 import tkinter as tk
 import numpy as np
 
-def load_df_data(dfs, loading_bar):
+def load_df_data(dfs, dfs_metas, loading_bar):
 
     Axial_arr = []
     master_dict_of_catagories = {}
+
+    #populate dict of catagories for dfs
     for index, dataframe in enumerate(dfs):
         loading_bar.increase_width()
         master_dict_of_catagories[str(index)] = {}
@@ -15,6 +17,19 @@ def load_df_data(dfs, loading_bar):
             temp_dict[element.tag] = str(element.keyword), str(element.VR), str(element.value)
             master_dict_of_catagories[str(index)][(str(element.tag)[1:5])].update(temp_dict)
         Axial_arr.append(dataframe.pixel_array)
+
+    #populate dict of catagories for dfs_metas
+    for index, dataframe in enumerate(dfs_metas):
+        #loading_bar.increase_width()
+        for element in dataframe:
+            if (str(element.tag)[1:5]) not in master_dict_of_catagories[str(index)]:
+                master_dict_of_catagories[str(index)][(str(element.tag)[1:5])] = {}
+            temp_dict = {}
+            temp_dict[element.tag] = str(element.keyword), str(element.VR), str(element.value)
+            master_dict_of_catagories[str(index)][(str(element.tag)[1:5])].update(temp_dict)
+
+
+
     Axial_arr = np.asarray(Axial_arr)
 
     Coronal_arr = []

@@ -2,9 +2,9 @@ import tkinter as tk
 
 
 class data_window:
-    width = 180
+    width = 165
     height = 30
-    text_box_height = 120
+    text_box_height = 150
     def __init__(self, root, relposx, relposy, title, fontstyle):
         self.root = root
         self.relposx = relposx

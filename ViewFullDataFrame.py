@@ -21,13 +21,13 @@ class text_box:
         self.width = width 
         self.element_str = tk.StringVar()
         if self.attrib == "tag":
-            self.element_str.set(dataelement.tag)
+            self.element_str.set(str(dataelement.tag))
         elif self.attrib == "keyword":
-            self.element_str.set(dataelement.keyword)
+            self.element_str.set(str(dataelement.keyword))
         elif self.attrib == "VR":
-            self.element_str.set(dataelement.VR)
+            self.element_str.set(str(dataelement.VR))
         elif self.attrib == "value":
-            self.element_str.set(dataelement.value)
+            self.element_str.set(str(dataelement.value))
         else:
             self.element_str.set(self.attrib)
         self.orig_string = self.element_str.get()
@@ -98,7 +98,7 @@ def update_scroll(yo):
             box.label.place_forget() 
 
    
-def create_full_df_toplevel(root, imagename, df, fontstyle):
+def create_full_df_toplevel(root, imagename, df, df_meta, fontstyle):
     global rootcopy
     rootcopy= root
     global dataframe
@@ -130,25 +130,43 @@ def create_full_df_toplevel(root, imagename, df, fontstyle):
     #clear text box list
     text_box.list_of_boxes.clear()
 
-    #populate entries
-    for index, dataelement in enumerate(df):
+
+   #populate df_meta entries
+    for index, dataelement in enumerate(df_meta):
         #tag
         newTB = text_box(toplevel = canv, fontstyle=fontstyle, index=index, dataelement=dataelement, xpos=0, width=canv_width/8, attrib = 'tag')
-
+        print(dataelement.tag, end = ', ')
         #keyword
         newTB2 = text_box(toplevel = canv, fontstyle=fontstyle, index=index, dataelement=dataelement, xpos=canv_width/8+1, width=canv_width/8, attrib = 'keyword')
+        print(dataelement.keyword, end = ', ')
+        #value
+ 
+        newTB3 = text_box(toplevel = canv, fontstyle=fontstyle, index=index, dataelement=dataelement, xpos=2*canv_width/8+1, width=5*canv_width/8, attrib = 'value')
+        print(dataelement.value, end = ', ') 
+        #VR
+        newTB4 = text_box(toplevel = canv, fontstyle=fontstyle, index=index, dataelement=dataelement, xpos=7*canv_width/8+2, width=canv_width/8+2, attrib = 'VR')
+        print(dataelement.VR)
+    current_length = len(df_meta)
+
+    #populate df entries
+    for index, dataelement in enumerate(df):
+        #tag
+        newTB = text_box(toplevel = canv, fontstyle=fontstyle, index=index+current_length, dataelement=dataelement, xpos=0, width=canv_width/8, attrib = 'tag')
+
+        #keyword
+        newTB2 = text_box(toplevel = canv, fontstyle=fontstyle, index=index+current_length, dataelement=dataelement, xpos=canv_width/8+1, width=canv_width/8, attrib = 'keyword')
         
         #value
         if index != 209:
-            newTB3 = text_box(toplevel = canv, fontstyle=fontstyle, index=index, dataelement=dataelement, xpos=2*canv_width/8+1, width=5*canv_width/8, attrib = 'value')
+            newTB3 = text_box(toplevel = canv, fontstyle=fontstyle, index=index+current_length, dataelement=dataelement, xpos=2*canv_width/8+1, width=5*canv_width/8, attrib = 'value')
         else:
             newTB3 = text_box(toplevel = canv, 
-                    fontstyle=fontstyle, index=index, 
+                    fontstyle=fontstyle, index=index+current_length, 
                     dataelement=dataelement, xpos=2*canv_width/8+1, width=5*canv_width/8, 
                     attrib = ("{} x {} array of pixels").format(str(len(dataframe.pixel_array)),str(len(dataframe.pixel_array[0]))))
 
         #VR
-        newTB4 = text_box(toplevel = canv, fontstyle=fontstyle, index=index, dataelement=dataelement, xpos=7*canv_width/8+2, width=canv_width/8+2, attrib = 'VR')
+        newTB4 = text_box(toplevel = canv, fontstyle=fontstyle, index=index+current_length, dataelement=dataelement, xpos=7*canv_width/8+2, width=canv_width/8+2, attrib = 'VR')
     
 
     #configure scroll bar to and from
@@ -159,7 +177,7 @@ def create_full_df_toplevel(root, imagename, df, fontstyle):
 
     #configure canvas length
     global canv_length
-    canv_length = text_box.height * len(df)
+    canv_length = text_box.height * (len(df) + len(df_meta))
     canv.place_configure(height = canv_length)
     update_scroll(1)
 

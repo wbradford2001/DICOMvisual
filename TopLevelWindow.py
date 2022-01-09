@@ -18,3 +18,10 @@ class top_window:
             rooty + root.winfo_screenheight()/2 - self.height/2)))
         self.toplevel.attributes('-topmost', True)
         self.toplevel.focus_force()
+
+def show_error_window(root, fontstyle, message):
+    unable_to_save = top_window(root = root, width = 300, height = 100, title = 'Error',
+                color= 'grey')
+    unable_to_save_text_label = tk.Label(unable_to_save.toplevel, text = message, font = fontstyle,
+                                    bg= 'grey', fg = 'black')
+    unable_to_save_text_label.place(relx = 0.5, rely = 0.5, anchor= 'center')

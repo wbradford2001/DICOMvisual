@@ -1,4 +1,5 @@
 import tkinter as tk
+from typing import List
 
 from matplotlib.pyplot import savefig
 
@@ -8,10 +9,12 @@ import TopLevelWindow
 buffer = 50
 class text_box:
     list_of_boxes = []
+    regular_boxes = []
+    meta_boxes = []
     error_box_already_exists = False
     height = 20
     fontstyle = None
-    def __init__(self, toplevel, fontstyle, index, dataelement, xpos, width, attrib):
+    def __init__(self, toplevel, fontstyle, index, dataelement, xpos, width, attrib, box_to_add_to):
         self.toplevel = toplevel
         self.attrib = attrib
         self.border_width = 1
@@ -22,17 +25,21 @@ class text_box:
         self.width = width 
         self.element_str = tk.StringVar()
         if self.attrib == "tag":
-            self.element_str.set(dataelement.tag)
+            self.element_str.set(str(dataelement.tag))
         elif self.attrib == "keyword":
-            self.element_str.set(dataelement.keyword)
+            self.element_str.set(str(dataelement.keyword))
         elif self.attrib == "VR":
-            self.element_str.set(dataelement.VR)
+            self.element_str.set(str(dataelement.VR))
         elif self.attrib == "value":
-            self.element_str.set(dataelement.value)
+            self.element_str.set(str(dataelement.value))
         else:
             self.element_str.set(self.attrib)
         self.orig_string = self.element_str.get()
         text_box.list_of_boxes.append(self)
+        if box_to_add_to == "regular":
+            text_box.regular_boxes.append(self)
+        elif box_to_add_to == "meta":
+            text_box.meta_boxes.append(self)      
         self.label = tk.Entry(
                     self.toplevel, 
                     font = (self.fontstyle, self.fontsize),
@@ -88,7 +95,7 @@ def update_scroll(yo):
             box.label.place_forget() 
 
    
-def create_full_df_toplevel(root, imagename, df, fontstyle):
+def create_full_df_toplevel(root, imagename, df, df_meta, fontstyle):
     global rootcopy
     rootcopy= root
     global dataframe
@@ -119,27 +126,54 @@ def create_full_df_toplevel(root, imagename, df, fontstyle):
 
     #clear text box list
     text_box.list_of_boxes.clear()
+    text_box.regular_boxes.clear()
+    text_box.meta_boxes.clear()
+   #populate df_meta entries
+    for index, dataelement in enumerate(df_meta):
+        #tag
+        newTB = text_box(toplevel = canv, fontstyle=fontstyle, index=index, dataelement=dataelement, xpos=0, width=canv_width/8, attrib = 'tag',
+                box_to_add_to = 'meta')
+        #keyword
+        newTB2 = text_box(toplevel = canv, fontstyle=fontstyle, index=index, dataelement=dataelement, xpos=canv_width/8+1, width=canv_width/8, attrib = 'keyword',
+                box_to_add_to = 'meta')
+        #value
+ 
+        newTB3 = text_box(toplevel = canv, fontstyle=fontstyle, index=index, dataelement=dataelement, xpos=2*canv_width/8+1, width=5*canv_width/8, attrib = 'value',
+                box_to_add_to = 'meta')
 
-    #populate entries
+        #VR
+        newTB4 = text_box(toplevel = canv, fontstyle=fontstyle, index=index, dataelement=dataelement, xpos=7*canv_width/8+2, width=canv_width/8+2, attrib = 'VR',
+                box_to_add_to = 'meta')
+    global current_length
+    current_length = len(df_meta)
+
+    #populate df entries
     for index, dataelement in enumerate(df):
         #tag
-        newTB = text_box(toplevel = canv, fontstyle=fontstyle, index=index, dataelement=dataelement, xpos=0, width=canv_width/8, attrib = 'tag')
+        newTB = text_box(toplevel = canv, fontstyle=fontstyle, index=index+current_length, dataelement=dataelement, xpos=0, width=canv_width/8, attrib = 'tag',
+                box_to_add_to = 'regular')
 
         #keyword
-        newTB2 = text_box(toplevel = canv, fontstyle=fontstyle, index=index, dataelement=dataelement, xpos=canv_width/8+1, width=canv_width/8, attrib = 'keyword')
+        newTB2 = text_box(toplevel = canv, fontstyle=fontstyle, index=index+current_length, dataelement=dataelement, xpos=canv_width/8+1, width=canv_width/8, attrib = 'keyword',
+                box_to_add_to = 'regular')
         
         #value
         if index != 209:
-            newTB3 = text_box(toplevel = canv, fontstyle=fontstyle, index=index, dataelement=dataelement, xpos=2*canv_width/8+1, width=5*canv_width/8, attrib = 'value')
+            newTB3 = text_box(toplevel = canv, fontstyle=fontstyle, index=index+current_length, dataelement=dataelement, xpos=2*canv_width/8+1, width=5*canv_width/8, attrib = 'value',
+                box_to_add_to = 'regular')
         else:
             newTB3 = text_box(toplevel = canv, 
-                    fontstyle=fontstyle, index=index, 
+                    fontstyle=fontstyle, index=index+current_length, 
                     dataelement=dataelement, xpos=2*canv_width/8+1, width=5*canv_width/8, 
-                    attrib = ("{} x {} array of pixels").format(str(len(dataframe.pixel_array)),str(len(dataframe.pixel_array[0]))))
+                    attrib = ("{} x {} array of pixels").format(str(len(dataframe.pixel_array)),str(len(dataframe.pixel_array[0]))),
+                box_to_add_to = 'regular')
 
         #VR
-        newTB4 = text_box(toplevel = canv, fontstyle=fontstyle, index=index, dataelement=dataelement, xpos=7*canv_width/8+2, width=canv_width/8+2, attrib = 'VR')
+        newTB4 = text_box(toplevel = canv, fontstyle=fontstyle, index=index+current_length, dataelement=dataelement, xpos=7*canv_width/8+2, width=canv_width/8+2, attrib = 'VR',
+                box_to_add_to = 'regular')
     
+
+
     #Save or revert canvas  
     save_or_revert_canv = tk.Canvas(Full_DF_Wind.toplevel, bg = 'grey', bd = 0, highlightthickness=0)
     save_or_revert_canv.place(x = 0, y = Full_DF_Wind.height - buffer, width = Full_DF_Wind.width - 18, height = buffer, anchor = 'nw')
@@ -179,7 +213,7 @@ def create_full_df_toplevel(root, imagename, df, fontstyle):
     just_one = tk.Radiobutton(just_one_or_all_files.toplevel, text = 'Just for ' + image_name, variable = option, value = "Just One",
     bg = 'grey', fg = 'black', font = text_box.fontstyle)
     just_one.select()
-    
+
     global all
     all = tk.Radiobutton(just_one_or_all_files.toplevel, text = 'All Files', variable = option, value = "All", 
     bg = 'grey', fg = 'black', font = text_box.fontstyle)
@@ -196,17 +230,40 @@ def produce_just_one_or_all_files_window():
     all.place(relx = 0.75, rely = 0.33, anchor = 'center')
     final_save_changes.place(relx = 0.5, rely = 0.66, relwidth = 0.4, relheight = 0.3, anchor = 'center')
 
-def save_changes(input_df):
-    for box in text_box.list_of_boxes:
+def save_changes_regular(input_df):
+    
+    for index, box in enumerate(text_box.regular_boxes):
         if box.orig_string != box.element_str.get():
-
-            hex_key = list(input_df.keys())[box.index]
-            if box.attrib  =="tag":
-                input_df[hex_key].tag = box.element_str.get()
-            elif box.attrib  =="keyword":
+            hex_key = list(input_df.keys())[box.index - current_length]
+            # if box.attrib  =="tag":
+            #     input_df[hex_key].tag = box.element_str.get()
+            if box.attrib  =="keyword":
                 input_df[hex_key].keyword = box.element_str.get()
             elif box.attrib  =="value":
-                input_df[hex_key].value = box.element_str.get()
+                print(index)
+                print(hex_key)
+                print(input_df[hex_key].value)
+                print(box.element_str.get())
+                input_df[hex_key].value = str(box.element_str.get())
+            elif box.attrib  =="VR":
+                input_df[hex_key].VR = box.element_str.get()  
+                
+    return input_df
+def save_changes_meta(input_df):
+    
+    for index, box in enumerate(text_box.meta_boxes):
+        if box.orig_string != box.element_str.get():
+            hex_key = list(input_df.keys())[box.index]
+            # if box.attrib  =="tag":
+            #     input_df[hex_key].tag = box.element_str.get()
+            if box.attrib  =="keyword":
+                input_df[hex_key].keyword = box.element_str.get()
+            elif box.attrib  =="value":
+                print(index)
+                print(hex_key)
+                print(input_df[hex_key].value)
+                print(box.element_str.get())
+                input_df[hex_key].value = str(box.element_str.get())
             elif box.attrib  =="VR":
                 input_df[hex_key].VR = box.element_str.get()  
                 
