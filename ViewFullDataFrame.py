@@ -27,7 +27,12 @@ class text_box:
         elif self.attrib == "VR":
             self.element_str.set(str(dataelement.VR))
         elif self.attrib == "value":
-            self.element_str.set(str(dataelement.value))
+            if (dataelement.keyword) != "PixelData":
+                self.element_str.set(str(dataelement.value))
+            else:
+                self.element_str.set("Array of {} elements".format(
+                                                                        len(dataelement.value),
+                                                                        ))
         else:
             self.element_str.set(self.attrib)
         self.orig_string = self.element_str.get()
@@ -135,17 +140,17 @@ def create_full_df_toplevel(root, imagename, df, df_meta, fontstyle):
     for index, dataelement in enumerate(df_meta):
         #tag
         newTB = text_box(toplevel = canv, fontstyle=fontstyle, index=index, dataelement=dataelement, xpos=0, width=canv_width/8, attrib = 'tag')
-        print(dataelement.tag, end = ', ')
+
         #keyword
         newTB2 = text_box(toplevel = canv, fontstyle=fontstyle, index=index, dataelement=dataelement, xpos=canv_width/8+1, width=canv_width/8, attrib = 'keyword')
-        print(dataelement.keyword, end = ', ')
+
         #value
  
         newTB3 = text_box(toplevel = canv, fontstyle=fontstyle, index=index, dataelement=dataelement, xpos=2*canv_width/8+1, width=5*canv_width/8, attrib = 'value')
-        print(dataelement.value, end = ', ') 
+
         #VR
         newTB4 = text_box(toplevel = canv, fontstyle=fontstyle, index=index, dataelement=dataelement, xpos=7*canv_width/8+2, width=canv_width/8+2, attrib = 'VR')
-        print(dataelement.VR)
+
     current_length = len(df_meta)
 
     #populate df entries
@@ -157,17 +162,19 @@ def create_full_df_toplevel(root, imagename, df, df_meta, fontstyle):
         newTB2 = text_box(toplevel = canv, fontstyle=fontstyle, index=index+current_length, dataelement=dataelement, xpos=canv_width/8+1, width=canv_width/8, attrib = 'keyword')
         
         #value
-        if index != 209:
-            newTB3 = text_box(toplevel = canv, fontstyle=fontstyle, index=index+current_length, dataelement=dataelement, xpos=2*canv_width/8+1, width=5*canv_width/8, attrib = 'value')
-        else:
-            newTB3 = text_box(toplevel = canv, 
-                    fontstyle=fontstyle, index=index+current_length, 
-                    dataelement=dataelement, xpos=2*canv_width/8+1, width=5*canv_width/8, 
-                    attrib = ("{} x {} array of pixels").format(str(len(dataframe.pixel_array)),str(len(dataframe.pixel_array[0]))))
+        #if index != 209:
+        newTB3 = text_box(toplevel = canv, fontstyle=fontstyle, index=index+current_length, dataelement=dataelement, xpos=2*canv_width/8+1, width=5*canv_width/8, attrib = 'value')
+        # else:
+        #     newTB3 = text_box(toplevel = canv, 
+        #             fontstyle=fontstyle, index=index+current_length, 
+        #             dataelement=dataelement, xpos=2*canv_width/8+1, width=5*canv_width/8, 
+        #             attrib = ("{} x {} array of pixels").format(str(len(dataframe.pixel_array)),str(len(dataframe.pixel_array[0]))))
 
         #VR
         newTB4 = text_box(toplevel = canv, fontstyle=fontstyle, index=index+current_length, dataelement=dataelement, xpos=7*canv_width/8+2, width=canv_width/8+2, attrib = 'VR')
     
+
+
 
     #configure scroll bar to and from
     global scroll_bar_to_
@@ -175,9 +182,12 @@ def create_full_df_toplevel(root, imagename, df, df_meta, fontstyle):
     scrollbar.config(to = scroll_bar_to_)
     scrollbar.config(from_ = 0)
 
+
     #configure canvas length
     global canv_length
     canv_length = text_box.height * (len(df) + len(df_meta))
     canv.place_configure(height = canv_length)
     update_scroll(1)
 
+    print(scroll_bar_to_)
+    print(canv_length)

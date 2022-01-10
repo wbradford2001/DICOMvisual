@@ -19,9 +19,17 @@ class top_window:
         self.toplevel.attributes('-topmost', True)
         self.toplevel.focus_force()
 
-def show_error_window(root, fontstyle, message):
-    unable_to_save = top_window(root = root, width = 300, height = 100, title = 'Error',
+def show_error_window(root, fontstyle, message, width = 300, height = 100, ErrorString = None):
+    unable_to_save = top_window(root = root, width = width, height = height, title = 'Error',
                 color= 'grey')
     unable_to_save_text_label = tk.Label(unable_to_save.toplevel, text = message, font = fontstyle,
                                     bg= 'grey', fg = 'black')
-    unable_to_save_text_label.place(relx = 0.5, rely = 0.5, anchor= 'center')
+    if ErrorString != None:
+        unable_to_save_text_label.place(relx = 0.5, rely = 0.2, anchor= 'center')
+        error = tk.Text(unable_to_save.toplevel, font = fontstyle, fg = 'black', bg = 'grey')
+        error.insert(tk.END, ErrorString)
+        error.place(relx = 0.5, rely = 0.35, relwidth = 1, relheight = 0.4, anchor = 'n')
+    else:
+        unable_to_save_text_label.place(relx = 0.5, rely = 0.5, anchor= 'center')
+
+    return unable_to_save

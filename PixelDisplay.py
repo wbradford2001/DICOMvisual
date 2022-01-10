@@ -38,16 +38,52 @@ class pixel_display:
 
         self.text_label = tk.Label(self.root, bg = 'grey', fg = 'white', font = (self.fontstyle, 8))
 
+        self.next_button = tk.Button(self.root, bg = 'grey', fg = 'black', font = self.fontstyle, text = 'next',command = self.next)
+        self.next_button.place(relx = self.relposx + 0.09, rely = self.relposy + 0.2, width = 75, height = 25, anchor = 'center')
+
+        self.back_button = tk.Button(self.root, bg = 'grey', fg = 'black', font = self.fontstyle, text = 'previous',command = self.back)
+        self.back_button.place(relx = self.relposx - 0.09, rely = self.relposy + 0.2, width = 75, height = 25, anchor = 'center')
+
+
+ 
+        self.goto_entry = tk.Entry(self.root, textvariable = self.currentim, bd = 0)
+        self.goto_entry.place(relx = self.relposx, rely = self.relposy + 0.16, anchor = 'center', width = 40)
+        self.currentim.trace_add("write", self.go_to)
+
+
         self.image_text_label = image_text_label
         self.image_names = image_names
         self.display_display_strings_func = display_display_strings_func
+        self.text_label.place(relx=self.relposx, rely = self.relposy + 0.2, anchor = 'center')
+
+    def next(self):
+        try:
+            self.currentim.set(self.currentim.get() + 1)
+            self.display_image(2)
+        except:
+            print("Error - forward")
+    def back(self):
+        try:
+            self.currentim.set(self.currentim.get() - 1)
+            self.display_image(2)
+        except:
+            print("Error - back")
+    def go_to(self, one, two, three):
+        try:
+            self.goto_entry.config(fg = 'black')
+            self.display_image(2)
+        except Exception as e:
+            self.goto_entry.config(fg = 'red')
+
+
     def display_image(self, image):
         image = self.currentim.get()
         self.ax1.cla()
-        try:
+        if self.currentim.get() < len(self.arr):
             self.ax1.imshow(self.arr[int(image)], cmap = 'bone')
-        except:
+        else:
             self.ax1.imshow(self.arr[-1], cmap = 'bone')
+
         self.tkcanvas.draw()
 
         self.text_label.config(text = ("Array Bounds: {} x {}\nCurrent Frame: {} out of {}").format(
@@ -56,12 +92,12 @@ class pixel_display:
             self.currentim.get(),
             self.arr.shape[0]
             ))
-        self.text_label.place(relx=self.relposx, rely = self.relposy + 0.2, anchor = 'center')
 
         if self.image_text_label != None:
             try:
                 self.image_text_label.config(text = self.image_names[int(self.currentim.get())])
             except:
                 self.image_text_label.config(text = self.image_names[-1])   
+
 
             self.display_display_strings_func(self.currentim.get())             
