@@ -9,10 +9,13 @@ def configure_buttons(configure_to, button_list):
         button.configure(state= configure_to)
 
 def display_new_dfs_and_dfs_meta(MainView,dfs, SideView1, SideView2):
-        MainView.display_image(100)
+        MainView.display_GUI()
+        MainView.display_image()
         if len(dfs)>1:
-            SideView1.display_image(100)
-            SideView2.display_image(100)
+            SideView1.display_GUI()
+            SideView1.display_image()
+            SideView2.display_GUI()
+            SideView2.display_image()            
 
 def clear_pixel_array(Pixel_Array):
 

@@ -45,6 +45,7 @@ def load_file(root, fontstyle):
         except Exception as e:
 
             loading_window.toplevel.destroy()
+            print(e)
             EW = TopLevelWindow.show_error_window(root, fontstyle, message="Unable to Load File(s)", ErrorString = e)
             return False, False, False, False
 
@@ -106,5 +107,5 @@ def populate_data_stuff(loading_window, loading_bar, root, fontstyle, dfs, dfs_m
 
         loading_window.toplevel.destroy()
         EW = TopLevelWindow.show_error_window(root, fontstyle, message="Unable to Load File(s)", ErrorString = e)
-            
+        print(e)
         return MainView, SideView1, SideView2, display_strings, True
