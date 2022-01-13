@@ -1,30 +1,20 @@
 import tkinter as tk
-import LoadFileCascade
-def remove_items(items):
-    for item in items:
-        item.place_forget()
+
 
 def configure_buttons(configure_to, button_list):
-    for button in button_list:
-        button.configure(state= configure_to)
+    if configure_to == "ENABLED":
+        for button in button_list:
+            button.enable()
+    elif configure_to == "DISABLED":
+        for button in button_list:
+            button.disable()
 
-def display_new_dfs_and_dfs_meta(MainView,dfs, SideView1, SideView2):
-        MainView.display_GUI()
-        MainView.display_image()
-        if len(dfs)>1:
-            SideView1.display_GUI()
-            SideView1.display_image()
-            SideView2.display_GUI()
-            SideView2.display_image()            
+def map_ranges(range1, range2):
+    y1 = range2[0]
+    y2 = range2[1]
+    x1 = range1[0]
+    x2 = range1[1]
+    print("x1:{}, x2:{}, y1: {}, y2: {}".format(x1, x2, y1, y2))
+    new_func = lambda x: ((y2-y1)/(x2-x1)) * (x - x1) + y1
 
-def clear_pixel_array(Pixel_Array):
-
-        Pixel_Array.scale.place_forget()
-
-        Pixel_Array.title_text.place_forget()
-
-        Pixel_Array.text_label.place_forget()
-
-        Pixel_Array.tkcanvas.get_tk_widget().place_forget()
-        Pixel_Array.next.place_forget()
-        Pixel_Array.back.place_forget()
+    return  new_func

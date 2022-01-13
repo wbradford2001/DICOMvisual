@@ -1,7 +1,7 @@
 import tkinter as tk
 from typing import List
 
-from matplotlib.pyplot import savefig
+
 
 import TopLevelWindow
 
@@ -14,13 +14,14 @@ class text_box:
     regular_boxes = []
     meta_boxes = []
     error_box_already_exists = False
-    height = 20
+    height = 15
     fontstyle = None
-    def __init__(self, toplevel, fontstyle, index, dataelement, xpos, width, attrib, box_to_add_to, view_or_edit):
+    def __init__(self, toplevel, fontstyle, index, dataelement, xpos, width, attrib, box_to_add_to, view_or_edit, disabled = False):
         self.toplevel = toplevel
         self.attrib = attrib
         self.border_width = 1
         self.fontsize = 8
+        self.disabled = disabled
         text_box.fontstyle = fontstyle
         self.xpos = xpos
         self.index = index
@@ -58,13 +59,16 @@ class text_box:
                     justify='center',
                     selectborderwidth = 1,
                     highlightcolor='black',
-                    highlightbackground= 'black',
+                    highlightbackground= 'black', 
 
                     )
         if self.view_or_edit == 'view':
             self.element_str.trace_add("write", self.error_message)
         elif self.view_or_edit == 'edit':
-            self.element_str.trace_add("write", self.change_made)            
+            if disabled == False:
+                self.element_str.trace_add("write", self.change_made)            
+            else:
+                self.element_str.trace_add("write", self.cant_edit_element)
     def change_made(self, one, two, three):
         save_button.config(state = tk.NORMAL)
         revert_button.config(state = tk.NORMAL)
@@ -84,6 +88,19 @@ class text_box:
             global EW
             EW = TopLevelWindow.show_error_window(root=Full_DF_Wind.toplevel, fontstyle=text_box.fontstyle, message="Editing Data is only possible in 'Custom Edit' mode", width = 400)
             EW.toplevel.protocol("WM_DELETE_WINDOW", on_closing)
+    def cant_edit_element(self, one, two, three):
+        self.element_str.set(self.orig_string)
+        #global Error_Window
+        if  text_box.error_box_already_exists == False:
+            text_box.error_box_already_exists = True
+            # Error_Window = TopLevelWindow.top_window(root=rootcopy, width=400, height=200, title="ERROR", color = 'grey')
+            # error_message = tk.Label(Error_Window.toplevel, text = "Editing Data is only possible in 'Custom Edit' mode",
+            #                         bg = 'grey',
+            #                         fg = 'white')
+            # error_message.place(relx = 0.5, rely = 0.5, anchor  ='center')
+            global EW
+            EW = TopLevelWindow.show_error_window(root=Full_DF_Wind.toplevel, fontstyle=text_box.fontstyle, message="Unable to Edit Data Element", width = 400)
+            EW.toplevel.protocol("WM_DELETE_WINDOW", on_closing)
 def on_closing():
     text_box.error_box_already_exists = False
     EW.toplevel.destroy()
@@ -94,7 +111,7 @@ def mouse_move(val):
 
 def update_scroll(yo):
     val = scroll.get()
-    num_boxes = 120
+    num_boxes = 200
     canv.place_configure(
         y = (-canv_length+Full_DF_Wind.height - buffer)/(scroll_bar_to_) * int(val)
         )
@@ -139,7 +156,7 @@ def create_full_df_toplevel(root, imagename, df, df_meta, fontstyle, view_or_edi
     image_name = imagename
     title = "Full Data Frame: " + image_name
     window_width = 1200
-    window_height = 500
+    window_height = 700
     global Full_DF_Wind
     Full_DF_Wind = TopLevelWindow.top_window(root = root, width = window_width, height=window_height + buffer, title = title)
     Full_DF_Wind.toplevel.bind('<MouseWheel>', mouse_move)
@@ -166,48 +183,48 @@ def create_full_df_toplevel(root, imagename, df, df_meta, fontstyle, view_or_edi
         #tag
         newTB = text_box(toplevel = canv, fontstyle=fontstyle, index=index, dataelement=dataelement, xpos=0, width=canv_width/8, attrib = 'tag',
                 box_to_add_to = 'meta', view_or_edit = view_or_edit)
-        print(dataelement.tag, type(dataelement.tag))
+
         #keyword
         newTB2 = text_box(toplevel = canv, fontstyle=fontstyle, index=index, dataelement=dataelement, xpos=canv_width/8+1, width=canv_width/8, attrib = 'keyword',
                 box_to_add_to = 'meta', view_or_edit = view_or_edit)
-        print(dataelement.tag, type(dataelement.tag))
+
         #value
  
         newTB3 = text_box(toplevel = canv, fontstyle=fontstyle, index=index, dataelement=dataelement, xpos=2*canv_width/8+1, width=5*canv_width/8, attrib = 'value',
                 box_to_add_to = 'meta', view_or_edit = view_or_edit)
-        print(dataelement.tag, type(dataelement.tag))
+
 
         #VR
         newTB4 = text_box(toplevel = canv, fontstyle=fontstyle, index=index, dataelement=dataelement, xpos=7*canv_width/8+2, width=canv_width/8+2, attrib = 'VR',
                 box_to_add_to = 'meta', view_or_edit = view_or_edit)
-        print(dataelement.tag, type(dataelement.tag))
+
     global current_length
     current_length = len(df_meta)
 
     #populate df entries
     for index, dataelement in enumerate(df):
-        print(dataelement, type(dataelement))
+
         #tag
         newTB = text_box(toplevel = canv, fontstyle=fontstyle, index=index+current_length, dataelement=dataelement, xpos=0, width=canv_width/8, attrib = 'tag',
                 box_to_add_to = 'regular', view_or_edit = view_or_edit)
-        print(dataelement.tag, type(dataelement.tag))
+
 
         #keyword
         newTB2 = text_box(toplevel = canv, fontstyle=fontstyle, index=index+current_length, dataelement=dataelement, xpos=canv_width/8+1, width=canv_width/8, attrib = 'keyword',
                 box_to_add_to = 'regular', view_or_edit = view_or_edit)
-        print(dataelement.tag, type(dataelement.tag))
         
         #value
-
-        newTB3 = text_box(toplevel = canv, fontstyle=fontstyle, index=index+current_length, dataelement=dataelement, xpos=2*canv_width/8+1, width=5*canv_width/8, attrib = 'value',
+        if dataelement.tag != "PixelData":
+            newTB3 = text_box(toplevel = canv, fontstyle=fontstyle, index=index+current_length, dataelement=dataelement, xpos=2*canv_width/8+1, width=5*canv_width/8, attrib = 'value',
                 box_to_add_to = 'regular', view_or_edit = view_or_edit)
-        print(dataelement.tag, type(dataelement.tag))
-
+        else:
+            newTB3 = text_box(toplevel = canv, fontstyle=fontstyle, index=index+current_length, dataelement=dataelement, xpos=2*canv_width/8+1, width=5*canv_width/8, attrib = 'value',
+                box_to_add_to = 'regular', view_or_edit = view_or_edit, disabled = True)
 
         #VR
         newTB4 = text_box(toplevel = canv, fontstyle=fontstyle, index=index+current_length, dataelement=dataelement, xpos=7*canv_width/8+2, width=canv_width/8+2, attrib = 'VR',
                 box_to_add_to = 'regular', view_or_edit = view_or_edit)
-        print(dataelement.tag, type(dataelement.tag))
+
     
 
     if view_or_edit == 'edit':
@@ -261,7 +278,9 @@ def create_full_df_toplevel(root, imagename, df, df_meta, fontstyle, view_or_edi
 
 def revert():
     for box in text_box.list_of_boxes:
-        box.element_str.set(box.orig_string)
+        if box.disabled == False:
+            box.element_str.set(box.orig_string)
+    save_button.configure(state = tk.DISABLED)
 def produce_just_one_or_all_files_window():
     just_one_or_all_files.toplevel.deiconify()
     just_one.place(relx = 0.33, rely = 0.33, anchor = 'center')
@@ -271,7 +290,8 @@ def produce_just_one_or_all_files_window():
 def save_changes_regular(input_df):
     
     for index, box in enumerate(text_box.regular_boxes):
-        if box.orig_string != box.element_str.get():
+        if str(box.orig_string) != str(box.element_str.get()):
+            print(hex_key)
             hex_key = list(input_df.keys())[box.index - current_length]
             # if box.attrib  =="tag":
             #     input_df[hex_key].tag = box.element_str.get()

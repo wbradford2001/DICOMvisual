@@ -1,123 +1,170 @@
 import tkinter as tk
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
-import time
+import DivideLine
+import master_funcs
+import ImageIndicator
+import CustomButton
 
 class pixel_display:
     scale_vals = [0]
     button_pressed = False
-    dpi =500
-    width = 250
-    height = 250
-    def __init__(self, root, title, arr, aspect, relposx, relposy, fontstyle, image_text_label = None, image_names = None, display_display_strings_func = None):
-        self.fontstyle = fontstyle
-        self.relposx = relposx
-        self.relposy = relposy
+    dpi =50
+    def __init__(self, master, root, title, arr, aspect, main_or_side):
+        #initialize
+        self.master = master    
         self.root = root
         self.title = title
         self.arr = arr
         self.aspect = aspect
+        self.main_or_side = main_or_side
 
+        #tkcanvas stuff
         self.figure1 = plt.Figure(figsize=(5,5), dpi=pixel_display.dpi)
         self.figure1.patch.set_facecolor('black')
-
         self.ax1 = self.figure1.add_subplot(111)
         self.ax1.get_xaxis().set_visible(False)
         self.ax1.get_yaxis().set_visible(False)
         self.ax1.set_aspect(self.aspect)
-        self.tkcanvas = FigureCanvasTkAgg(self.figure1, self.root)
-        self.tkcanvas.get_tk_widget().place(relx = self.relposx, rely = self.relposy, anchor = 'center', width = pixel_display.width, height = pixel_display.height)
+        self.tkcanvas = FigureCanvasTkAgg(self.figure1, self.root.canvobject)
+        self.tkcanvas.get_tk_widget().place(
+            relx = 0.5, rely = 0.5, anchor = 'center', relwidth = 1, relheight = 1)
  
-
-
-
+        #scale
         self.currentim = tk.IntVar()
         self.currentim.set(self.arr.shape[0]//2)
-        self.scale = tk.Scale(self.root, variable = self.currentim, background = 'black', fg = 'black', from_ = 0, to = self.arr.shape[0], showvalue = False)
-        self.scale.place(relx = self.relposx + 0.15, rely = self.relposy, anchor= 'center', height = pixel_display.height)
+        self.scale = tk.Scale(self.root.canvobject, variable = self.currentim, background = 'black', fg = 'black', from_ = 0, to = self.arr.shape[0]-1, showvalue = False)
         self.scale.bind('<B1-Motion>', self.decide)
       
+        #title
+        self.title_text = tk.Label(self.root.canvobject, text = self.title, bg = 'black', fg = 'white', font = (self.master.fontstyle, 14))
 
+        #text box at bottom
+        self.text_label = tk.Label(self.root.canvobject, bg = 'black', fg = 'white', font = (self.master.fontstyle, 8))
 
+        #next
+        self.next_button = CustomButton.Button(root = self.root.canvobject, relxpos = self.root.actualwidth - 20 - 30, relypos = self.root.actualheight - DivideLine.Divider.buffer/2 - 15,
+                                width = 60, height = 30, text = 'Next', size_reduce = 3, command = self.next, show= False, placing = 'absolute')
 
-        self.title_text = tk.Label(self.root, text = self.title, bg = 'black', fg = 'white', font = (self.fontstyle, 14))
-        self.title_text.place(relx = self.relposx, rely = self.relposy - 0.2, anchor = 'center')
+        #back
+        self.back_button = CustomButton.Button(root = self.root.canvobject, relxpos = 20 + 30, relypos = self.root.actualheight - DivideLine.Divider.buffer/2 - 15,
+                                width = 60, height = 30, text = 'Previous', size_reduce = 3, command = self.back, show= False, placing = 'absolute')
+    
 
-        self.text_label = tk.Label(self.root, bg = 'grey', fg = 'white', font = (self.fontstyle, 8))
-
-        self.next_button = tk.Button(self.root, bg = 'grey', fg = 'black', font = self.fontstyle, text = 'next',command = self.next)
-        self.next_button.place(relx = self.relposx + 0.09, rely = self.relposy + 0.2, width = 75, height = 25, anchor = 'center')
-
-        self.back_button = tk.Button(self.root, bg = 'grey', fg = 'black', font = self.fontstyle, text = 'previous',command = self.back)
-        self.back_button.place(relx = self.relposx - 0.09, rely = self.relposy + 0.2, width = 75, height = 25, anchor = 'center')
-
-
+        #Go to entry
         self.tempcurrentim = tk.IntVar()
-        self.goto_entry = tk.Entry(self.root, bd = 0, textvariable = self.tempcurrentim)
-        self.goto_entry.place(relx = self.relposx, rely = self.relposy + 0.16, anchor = 'center', width = 40)
-        self.tempcurrentim.trace_add("write", self.go_to)
+        self.goto_entry = tk.Entry(self.root.canvobject, bd = 0, textvariable = self.tempcurrentim, justify=tk.CENTER, selectborderwidth = 0, highlightcolor = 'black', relief = tk.FLAT, highlightthickness=0, highlightbackground='black')
+        self.goto_entry.config({"background": 'grey'})
+        #Go to button
+        self.goto_button = CustomButton.Button(root = self.root.canvobject, 
+                                    relxpos = self.root.actualwidth - DivideLine.Divider.buffer/2 - 20 - 75/2, 
+                                    relypos = DivideLine.Divider.buffer/2 + 20/2 + 2, 
+                                    width = 75, 
+                                    height = 20, text = "Set Frame", size_reduce = 3, command = self.go_to, placing='absolute', show = False)
 
 
-        print("Defining it here")
-        self.image_text_label = image_text_label
-        self.image_names = image_names
-        self.display_display_strings_func = display_display_strings_func
-        self.text_label.place(relx=self.relposx, rely = self.relposy + 0.2, anchor = 'center')
 
+        #main stuff
+        if self.main_or_side == "main" and len(self.master.dfs) > 1:
+                self.mapfunc = master_funcs.map_ranges(
+                        [0, len(self.arr)-1], 
+                        [self.master.ImageIndicatorCanvas.actualheight/2-ImageIndicator.image_indicator.height/2, 
+                        -(ImageIndicator.image_indicator.height*len(self.arr)) + self.master.ImageIndicatorCanvas.actualheight/2+ImageIndicator.image_indicator.height/2]
+                    )
+    def show_self(self):
+        if len(self.master.dfs) > 1:
+            self.scale.place(x = self.root.actualwidth - DivideLine.Divider.buffer/2, rely = 0.5, anchor= 'e', relheight = 1)
+            #self.next_button.place(x = self.root.actualwidth - 20, y = self.root.actualheight - DivideLine.Divider.buffer/2, width = 60, height = 30, anchor = 'se')
+            self.next_button.show_self()
+            self.back_button.show_self()            
+            self.goto_entry.place(x = self.root.actualwidth - DivideLine.Divider.buffer/2 - 20 - 80, y = DivideLine.Divider.buffer, anchor = 'ne', width = 35)
+            self.goto_button.show_self()           
+        else:
+            self.title_text.config(text = self.master.image_names[0])
+
+        self.title_text.place(x = DivideLine.Divider.buffer/2, y = DivideLine.Divider.buffer/2, anchor = 'nw')
+        self.text_label.place(relx=0.5, y = self.root.actualheight - DivideLine.Divider.buffer/2 - 15, anchor = 'center')
+
+        self.display_image()
+        self.display_GUI()
+    def hide_self(self):
+        self.scale.place_forget()
+        self.title_text.place_forget()
+        self.text_label.place_forget()
+        self.next_button.hide_self()
+        self.back_button.hide_self()   
+        self.goto_entry.place_forget()
+        self.back_button.hide_self()  
     def next(self):
-        try:
+        if self.currentim.get() < len(self.arr):
             self.currentim.set(self.currentim.get() + 1)
-            self.display_image(2)
-        except:
-            print("Error - forward")
+            self.display_image()
+            self.display_GUI()  
     def back(self):
-        try:
+        if self.currentim.get() > 0:
             self.currentim.set(self.currentim.get() - 1)
-            self.display_image(2)
-        except:
-            print("Error - back")
-    def go_to(self, one, two, three):
+            self.display_image()
+            self.display_GUI()  
+    def go_to(self):
         try:
             self.currentim.set(self.tempcurrentim.get())
             self.goto_entry.config(fg = 'black')
             self.display_image()
             self.display_GUI()            
         except Exception as e:
+            print("Error in Go To Entry")
+            print(e)
             self.goto_entry.config(fg = 'red')
-
-    
 
     def decide(self, e):
         self.display_image()
-        if self.root.winfo_pointery()-275 == e.y:
-            self.display_GUI()
+
+        if e.y == (self.master.root.winfo_pointery()-self.root.actualy):
+             self.display_GUI()
     def display_GUI(self):
-            self.text_label.config(text = ("Array Bounds: {} x {}\nCurrent Frame: {} out of {}").format(
-                self.arr.shape[1],
-                self.arr.shape[2],
-                self.currentim.get(),
-                self.arr.shape[0]
-                ))
-            self.tempcurrentim.set(self.currentim.get())
-            if self.image_text_label != None:
-                try:
-                    self.image_text_label.config(text = self.image_names[int(self.currentim.get())])
-                except:
-                    self.image_text_label.config(text = self.image_names[-1])   
+            if len(self.master.dfs) > 1:
+                self.text_label.config(text = ("Array Bounds: {} x {}\nCurrent Frame: {} out of {}").format(
+                    self.arr.shape[1],
+                    self.arr.shape[2],
+                    self.currentim.get(),
+                    self.arr.shape[0]
+                    ))
+                #set go to entry
+                self.tempcurrentim.set(self.currentim.get())
+            else:
+                self.text_label.config(text = ("Array Bounds: {} x {}").format(
+                    self.arr.shape[1],
+                    self.arr.shape[2],
+                    ))
+            #main stuff
+            if self.main_or_side == "main":
+                #update display strings
+                for key, box in self.master.text_boxes.items():
+                    box.show_self(self.master.display_strings[str(self.currentim.get())][str(key)])
 
+                if len(self.master.dfs) > 1:
+                    #set the current image indicators colors to grey
+                    self.master.Image_Indicator.orig_color = 'grey'
+                    self.master.Image_Indicator.color_to_original(yo = 3)
 
-                self.display_display_strings_func(self.currentim.get())   
+                    #set new image indicator to currentim
+                    self.master.Image_Indicator = self.master.Image_Indicators[self.currentim.get()]
+                    self.master.Image_Indicator.orig_color = 'red'
+                    self.master.Image_Indicator.recolor(yo = 3)
+
+                    #configure image indicator canvas
+                    self.master.ImageIndicatorCanvas.canvobject.place_configure(
+                        y = self.mapfunc(self.currentim.get()),
+                    
+                    )
+
 
 
     def display_image(self):
-
-        #image = self.currentim.get()
         self.ax1.cla()
-        if self.currentim.get() < len(self.arr):
-            self.ax1.imshow(self.arr[self.currentim.get()], cmap = 'bone')
-        else:
-            self.ax1.imshow(self.arr[-1], cmap = 'bone')
-
+        self.ax1.imshow(self.arr[self.currentim.get()], cmap = 'bone')
         self.tkcanvas.draw()
+
+
 
           
