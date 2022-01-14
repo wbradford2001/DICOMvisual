@@ -5,9 +5,10 @@ class Button:
     defaultidlecolor = '#%02x%02x%02x' % (70, 70, 70)
     defaultactivecolor = '#%02x%02x%02x' % (100, 120, 100)
     defaultpressedcolor = 'blue'
-    def __init__(self, root, relxpos, relypos, width, height,text, size_reduce, command,  
+    def __init__(self, master, root, relxpos, relypos, width, height,text, size_reduce, command,  
             disabledback = defaultdisabedcolor, idleback=defaultidlecolor, activeback=defaultactivecolor, pressedback=defaultpressedcolor, state = 'ENABLED', show = True,
             placing = 'relative', anchor = 'center'):
+        self.master = master
         self.root = root
         self.relxpos = relxpos
         self.relypos = relypos
@@ -21,7 +22,7 @@ class Button:
         self.size_reduce = size_reduce
         self.placing = placing
         self.anchor = anchor
-        self.obj  = tk.Label(self.root, text = self.text, borderwidth=2)
+        self.obj  = tk.Label(self.root, text = self.text, borderwidth=2, font = self.master.fontstyle)
         self.state = state
         if self.state == "ENABLED":
             self.obj.config(bg = self.idleback)

@@ -10,10 +10,10 @@ class pixel_display:
     scale_vals = [0]
     button_pressed = False
     dpi =50
-    def __init__(self, master, root, title, arr, aspect, main_or_side):
+    def __init__(self, master, parent_canv, title, arr, aspect, main_or_side):
         #initialize
-        self.master = master    
-        self.root = root
+        self.master = master
+        self.parent_canv = parent_canv    
         self.title = title
         self.arr = arr
         self.aspect = aspect
@@ -26,38 +26,38 @@ class pixel_display:
         self.ax1.get_xaxis().set_visible(False)
         self.ax1.get_yaxis().set_visible(False)
         self.ax1.set_aspect(self.aspect)
-        self.tkcanvas = FigureCanvasTkAgg(self.figure1, self.root.canvobject)
+        self.tkcanvas = FigureCanvasTkAgg(self.figure1, self.parent_canv.canvobject)
         self.tkcanvas.get_tk_widget().place(
             relx = 0.5, rely = 0.5, anchor = 'center', relwidth = 1, relheight = 1)
  
         #scale
         self.currentim = tk.IntVar()
         self.currentim.set(self.arr.shape[0]//2)
-        self.scale = tk.Scale(self.root.canvobject, variable = self.currentim, background = 'black', fg = 'black', from_ = 0, to = self.arr.shape[0]-1, showvalue = False)
+        self.scale = tk.Scale(self.parent_canv.canvobject, variable = self.currentim, background = 'black', fg = 'black', from_ = 0, to = self.arr.shape[0]-1, showvalue = False)
         self.scale.bind('<B1-Motion>', self.decide)
       
         #title
-        self.title_text = tk.Label(self.root.canvobject, text = self.title, bg = 'black', fg = 'white', font = (self.master.fontstyle, 14))
+        self.title_text = tk.Label(self.parent_canv.canvobject, text = self.title, bg = 'black', fg = 'white', font = (self.master.fontstyle, 14))
 
         #text box at bottom
-        self.text_label = tk.Label(self.root.canvobject, bg = 'black', fg = 'white', font = (self.master.fontstyle, 8))
+        self.text_label = tk.Label(self.parent_canv.canvobject, bg = 'black', fg = 'white', font = (self.master.fontstyle, 8))
 
         #next
-        self.next_button = CustomButton.Button(root = self.root.canvobject, relxpos = self.root.actualwidth - 20 - 30, relypos = self.root.actualheight - DivideLine.Divider.buffer/2 - 15,
+        self.next_button = CustomButton.Button(master = self.master, root = self.parent_canv.canvobject, relxpos = self.parent_canv.actualwidth - 20 - 30, relypos = self.parent_canv.actualheight - DivideLine.Divider.buffer/2 - 15,
                                 width = 60, height = 30, text = 'Next', size_reduce = 3, command = self.next, show= False, placing = 'absolute')
 
         #back
-        self.back_button = CustomButton.Button(root = self.root.canvobject, relxpos = 20 + 30, relypos = self.root.actualheight - DivideLine.Divider.buffer/2 - 15,
+        self.back_button = CustomButton.Button(master = self.master, root = self.parent_canv.canvobject, relxpos = 20 + 30, relypos = self.parent_canv.actualheight - DivideLine.Divider.buffer/2 - 15,
                                 width = 60, height = 30, text = 'Previous', size_reduce = 3, command = self.back, show= False, placing = 'absolute')
     
 
         #Go to entry
         self.tempcurrentim = tk.IntVar()
-        self.goto_entry = tk.Entry(self.root.canvobject, bd = 0, textvariable = self.tempcurrentim, justify=tk.CENTER, selectborderwidth = 0, highlightcolor = 'black', relief = tk.FLAT, highlightthickness=0, highlightbackground='black')
+        self.goto_entry = tk.Entry(self.parent_canv.canvobject, bd = 0, textvariable = self.tempcurrentim, justify=tk.CENTER, selectborderwidth = 0, highlightcolor = 'black', relief = tk.FLAT, highlightthickness=0, highlightbackground='black')
         self.goto_entry.config({"background": 'grey'})
         #Go to button
-        self.goto_button = CustomButton.Button(root = self.root.canvobject, 
-                                    relxpos = self.root.actualwidth - DivideLine.Divider.buffer/2 - 20 - 75/2, 
+        self.goto_button = CustomButton.Button(master = self.master, root = self.parent_canv.canvobject,
+                                    relxpos = self.parent_canv.actualwidth - DivideLine.Divider.buffer/2 - 20 - 75/2, 
                                     relypos = DivideLine.Divider.buffer/2 + 20/2 + 2, 
                                     width = 75, 
                                     height = 20, text = "Set Frame", size_reduce = 3, command = self.go_to, placing='absolute', show = False)
@@ -73,17 +73,17 @@ class pixel_display:
                     )
     def show_self(self):
         if len(self.master.dfs) > 1:
-            self.scale.place(x = self.root.actualwidth - DivideLine.Divider.buffer/2, rely = 0.5, anchor= 'e', relheight = 1)
+            self.scale.place(x = self.parent_canv.actualwidth - DivideLine.Divider.buffer/2, rely = 0.5, anchor= 'e', relheight = 1)
             #self.next_button.place(x = self.root.actualwidth - 20, y = self.root.actualheight - DivideLine.Divider.buffer/2, width = 60, height = 30, anchor = 'se')
             self.next_button.show_self()
             self.back_button.show_self()            
-            self.goto_entry.place(x = self.root.actualwidth - DivideLine.Divider.buffer/2 - 20 - 80, y = DivideLine.Divider.buffer, anchor = 'ne', width = 35)
+            self.goto_entry.place(x = self.parent_canv.actualwidth - DivideLine.Divider.buffer/2 - 20 - 80, y = DivideLine.Divider.buffer, anchor = 'ne', width = 35)
             self.goto_button.show_self()           
         else:
             self.title_text.config(text = self.master.image_names[0])
 
         self.title_text.place(x = DivideLine.Divider.buffer/2, y = DivideLine.Divider.buffer/2, anchor = 'nw')
-        self.text_label.place(relx=0.5, y = self.root.actualheight - DivideLine.Divider.buffer/2 - 15, anchor = 'center')
+        self.text_label.place(relx=0.5, y = self.parent_canv.actualheight - DivideLine.Divider.buffer/2 - 15, anchor = 'center')
 
         self.display_image()
         self.display_GUI()
@@ -119,7 +119,7 @@ class pixel_display:
     def decide(self, e):
         self.display_image()
 
-        if e.y == (self.master.root.winfo_pointery()-self.root.actualy):
+        if e.y == (self.master.root.winfo_pointery()-self.parent_canv.actualy):
              self.display_GUI()
     def display_GUI(self):
             if len(self.master.dfs) > 1:

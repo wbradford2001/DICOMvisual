@@ -33,20 +33,20 @@ class app:
         menubar.place(x = 0, y = 0, relwidth  = 1, height = MenuButton.menu_button.menubuttonheight)
         self.Menu= MenuButton.menu_button(self.root, xpos= 0, width = 100, title = "Menu")
 
-        self.Clear = CustomButton.Button(root = self.Menu.canvobj, relxpos = 1/12, relypos = 0.5, width = self.root.winfo_screenwidth()/6, height =MenuButton.menu_button.canvasheight, 
+        self.Clear = CustomButton.Button(master = self, root = self.Menu.canvobj, relxpos = 1/12, relypos = 0.5, width = self.root.winfo_screenwidth()/6, height =MenuButton.menu_button.canvasheight, 
             text = 'Clear', size_reduce=6, command = self.hide_all, state = "DISABLED")  
-        self.NewFile = CustomButton.Button(root = self.Menu.canvobj, relxpos = 3/12, relypos = 0.5, width = self.root.winfo_screenwidth()/6, height =MenuButton.menu_button.canvasheight, 
+        self.NewFile = CustomButton.Button(master = self, root = self.Menu.canvobj, relxpos = 3/12, relypos = 0.5, width = self.root.winfo_screenwidth()/6, height =MenuButton.menu_button.canvasheight, 
             text = 'Import File(s)', size_reduce=6, command = self.load, state = "ENABLED")  
-        self.Export_DICOM_file = CustomButton.Button(root = self.Menu.canvobj, relxpos = 5/12, relypos = 0.5, width = self.root.winfo_screenwidth()/6+2, height =MenuButton.menu_button.canvasheight, 
+        self.Export_DICOM_file = CustomButton.Button(master = self, root = self.Menu.canvobj, relxpos = 5/12, relypos = 0.5, width = self.root.winfo_screenwidth()/6+2, height =MenuButton.menu_button.canvasheight, 
             text = 'Export', size_reduce=6, command = self.decide_export, state = "DISABLED")
         
-        self.View_Full_DF = CustomButton.Button(root = self.Menu.canvobj, relxpos = 7/12, relypos = 0.5, width = self.root.winfo_screenwidth()/6, height =MenuButton.menu_button.canvasheight, 
+        self.View_Full_DF = CustomButton.Button(master = self, root = self.Menu.canvobj, relxpos = 7/12, relypos = 0.5, width = self.root.winfo_screenwidth()/6, height =MenuButton.menu_button.canvasheight, 
             text = 'View Full Data Frame', size_reduce=6, command = self.view_full_df, state = "DISABLED") 
         
-        self.Custom_DF_Edit = CustomButton.Button(root = self.Menu.canvobj, relxpos = 9/12, relypos = 0.5, width = self.root.winfo_screenwidth()/6, height =MenuButton.menu_button.canvasheight, 
+        self.Custom_DF_Edit = CustomButton.Button(master = self, root = self.Menu.canvobj, relxpos = 9/12, relypos = 0.5, width = self.root.winfo_screenwidth()/6, height =MenuButton.menu_button.canvasheight, 
             text = 'Edit Data Element(s)', size_reduce=6, command = self.custom_df_edit, state = "DISABLED")
         
-        self.Exit = CustomButton.Button(root = self.Menu.canvobj, relxpos = 11/12, relypos = 0.5, width = self.root.winfo_screenwidth()/6, height =MenuButton.menu_button.canvasheight, 
+        self.Exit = CustomButton.Button(master = self, root = self.Menu.canvobj, relxpos = 11/12, relypos = 0.5, width = self.root.winfo_screenwidth()/6, height =MenuButton.menu_button.canvasheight, 
             text = 'Exit', size_reduce=6, command = self.root.destroy, state = "ENABLED")
         
     def define_canvases_and_dividers(self):     
@@ -55,34 +55,34 @@ class app:
         Text_Box_Top_Line_Pos = 0.65
 
 
-        self.MainViewCanvas = CustomCanvas.CustomCanv(root = self.root, color = 'black', relposx = 0.3, relposy = View_Top_Line_Pos, relwidth = 0.3, relheight = Text_Box_Top_Line_Pos-View_Top_Line_Pos)
-        self.SideView1Canvas = CustomCanvas.CustomCanv(root = self.root, color = 'black', relposx = 0, relposy = View_Top_Line_Pos, relwidth = 0.3, relheight = Text_Box_Top_Line_Pos-View_Top_Line_Pos)
-        self.SideView2Canvas = CustomCanvas.CustomCanv(root = self.root, color = 'black', relposx = 0.6, relposy = View_Top_Line_Pos, relwidth = 0.3, relheight = Text_Box_Top_Line_Pos-View_Top_Line_Pos)
-        self.TempImageIndicatorCanvas = CustomCanvas.CustomCanv(root = self.root, color = '#%02x%02x%02x' % (70, 70, 70), relposx = self.SideView2Canvas.relposx + self.SideView2Canvas.relwidth, relposy = View_Top_Line_Pos, 
+        self.MainViewCanvas = CustomCanvas.CustomCanv(master = self, root = self.root, color = 'black', relposx = 0.3, relposy = View_Top_Line_Pos, relwidth = 0.3, relheight = Text_Box_Top_Line_Pos-View_Top_Line_Pos)
+        self.SideView1Canvas = CustomCanvas.CustomCanv(master = self, root = self.root, color = 'black', relposx = 0, relposy = View_Top_Line_Pos, relwidth = 0.3, relheight = Text_Box_Top_Line_Pos-View_Top_Line_Pos)
+        self.SideView2Canvas = CustomCanvas.CustomCanv(master = self, root = self.root, color = 'black', relposx = 0.6, relposy = View_Top_Line_Pos, relwidth = 0.3, relheight = Text_Box_Top_Line_Pos-View_Top_Line_Pos)
+        self.TempImageIndicatorCanvas = CustomCanvas.CustomCanv(master = self, root = self.root, color = '#%02x%02x%02x' % (70, 70, 70), relposx = self.SideView2Canvas.relposx + self.SideView2Canvas.relwidth, relposy = View_Top_Line_Pos, 
                                                         relwidth = 1-(self.SideView2Canvas.relposx + self.SideView2Canvas.relwidth), relheight = Text_Box_Top_Line_Pos-View_Top_Line_Pos)
-        self.ImageIndicatorCanvas = CustomCanvas.CustomCanv(root = self.root, color = '#%02x%02x%02x' % (70, 70, 70), relposx = self.SideView2Canvas.relposx + self.SideView2Canvas.relwidth, relposy = View_Top_Line_Pos, 
+        self.ImageIndicatorCanvas = CustomCanvas.CustomCanv(master = self, root = self.root, color = '#%02x%02x%02x' % (70, 70, 70), relposx = self.SideView2Canvas.relposx + self.SideView2Canvas.relwidth, relposy = View_Top_Line_Pos, 
                                                         relwidth = 1-(self.SideView2Canvas.relposx + self.SideView2Canvas.relwidth), relheight = Text_Box_Top_Line_Pos-View_Top_Line_Pos)
         
-        self.TextBoxCanvas = CustomCanvas.CustomCanv(root = self.root, color = 'black', relposx = 0, relposy = Text_Box_Top_Line_Pos, relwidth = 1, relheight = 1-Text_Box_Top_Line_Pos)
+        self.TextBoxCanvas = CustomCanvas.CustomCanv(master = self, root = self.root, color = 'black', relposx = 0, relposy = Text_Box_Top_Line_Pos, relwidth = 1, relheight = 1-Text_Box_Top_Line_Pos)
 
 
         #define dividers
-        self.View_Top_Line = DivideLine.Divider(self.root, orientation = 'horizontal', relposy = View_Top_Line_Pos, 
+        self.View_Top_Line = DivideLine.Divider(master = self,root = self.root, orientation = 'horizontal', relposy = View_Top_Line_Pos, 
                 width = self.root.winfo_screenwidth())
         
-        self.Text_Box_Top_Line = DivideLine.Divider(self.root, orientation = 'horizontal', relposy = Text_Box_Top_Line_Pos, 
+        self.Text_Box_Top_Line = DivideLine.Divider(master = self, root = self.root, orientation = 'horizontal', relposy = Text_Box_Top_Line_Pos, 
                 width = self.root.winfo_screenwidth())
 
-        self.SideView1toMainDivider = DivideLine.Divider(self.root, orientation = 'vertical', relposy = (View_Top_Line_Pos + Text_Box_Top_Line_Pos)/2, height = self.MainViewCanvas.actualheight - DivideLine.Divider.buffer, relposx = 0.3)
+        self.SideView1toMainDivider = DivideLine.Divider(master = self, root = self.root, orientation = 'vertical', relposy = (View_Top_Line_Pos + Text_Box_Top_Line_Pos)/2, height = self.MainViewCanvas.actualheight - DivideLine.Divider.buffer, relposx = 0.3)
 
-        self.MainDividertoSideView2 = DivideLine.Divider(self.root, orientation = 'vertical', relposy = (View_Top_Line_Pos + Text_Box_Top_Line_Pos)/2, height = self.MainViewCanvas.actualheight - DivideLine.Divider.buffer, relposx = 0.6)
+        self.MainDividertoSideView2 = DivideLine.Divider(master = self, root = self.root, orientation = 'vertical', relposy = (View_Top_Line_Pos + Text_Box_Top_Line_Pos)/2, height = self.MainViewCanvas.actualheight - DivideLine.Divider.buffer, relposx = 0.6)
 
-        self.SideView2toImageIndicator = DivideLine.Divider(self.root, orientation = 'vertical', relposy = (View_Top_Line_Pos + Text_Box_Top_Line_Pos)/2, height = self.MainViewCanvas.actualheight- DivideLine.Divider.buffer, relposx = 0.9)
+        self.SideView2toImageIndicator = DivideLine.Divider(master = self, root = self.root, orientation = 'vertical', relposy = (View_Top_Line_Pos + Text_Box_Top_Line_Pos)/2, height = self.MainViewCanvas.actualheight- DivideLine.Divider.buffer, relposx = 0.9)
 
     def define_display_boxes_and_image_indicators(self): 
 
         #define_display_boxes
-        matches = {
+        self.matches = {
             '0002': 'Meta Data',        
             '0008': 'Identifying Information',
             '0010': 'Patient Information',
@@ -93,12 +93,12 @@ class app:
         }
         keys_included = []
         for key in self.display_strings['0'].keys():
-            if key in matches:
+            if key in self.matches:
                 keys_included.append(key)
         self.text_boxes = {}
         num_boxes = len(keys_included)
         for index, key in enumerate(keys_included):
-            self.text_boxes[key] = DataTextBox.data_window(master = self, root = self.TextBoxCanvas.canvobject, relposx = index/num_boxes, relposy = 0, title = matches[str(key)],width  = 1/num_boxes)
+            self.text_boxes[key] = DataTextBox.data_window(master = self, root = self.TextBoxCanvas.canvobject, relposx = index/num_boxes, relposy = 0, title = self.matches[str(key)],width  = 1/num_boxes)
 
         if len(self.dfs) > 1:
         #define_image_indicators()
@@ -163,23 +163,18 @@ class app:
         master_funcs.configure_buttons("DISABLED", [self.NewFile])
 
 
+        self.cascade = CustomDFEdit.full_df_cascade()
+
     def view_full_df(self):
-        CustomDFEdit.create_full_df_toplevel(root = root, 
-                                            imagename = image_names[MainView.currentim.get()], 
-                                            df =  dfs[MainView.currentim.get()], df_meta = dfs_metas[MainView.currentim.get()],
-                                            fontstyle = fontstyle, view_or_edit = 'view'
-                                            )
+
+        self.cascade.create_full_df_toplevel(master = self, view_or_edit = 'view')
         
     def custom_df_edit(self):
-        CustomDFEdit.create_full_df_toplevel(root = root, 
-                                            imagename = image_names[MainView.currentim.get()], 
-                                            df =  dfs[MainView.currentim.get()], df_meta = dfs_metas[MainView.currentim.get()],
-                                            fontstyle = fontstyle
-                                            )
-        if len(dfs) > 1:
-            CustomDFEdit.final_save_changes.bind('<Button>', save_changes_Edit_DF)
-        else:
-            CustomDFEdit.save_button.bind('<Button>', save_changes_Edit_DF)
+        self.cascade.create_full_df_toplevel(master = self, view_or_edit = 'ENABLED')
+        # if len(dfs) > 1:
+        #     CustomDFEdit.final_save_changes.bind('<Button>', save_changes_Edit_DF)
+        # else:
+        #     CustomDFEdit.save_button.bind('<Button>', save_changes_Edit_DF)
 
     def save_changes_Edit_DF(self, hi):
         global MainView
@@ -249,10 +244,10 @@ if __name__ == "__main__":
     MyDICOMvisual.define_menus()
 
 
-    welcome_window = TopLevelWindow.top_window(MyDICOMvisual, 500, 300, title = "Welcome!", color = 'grey')
+    welcome_window = TopLevelWindow.top_window(master = MyDICOMvisual, root = MyDICOMvisual.root, width = 500, height = 300, title = "Welcome!", color = 'grey')
     welcome = tk.Label(welcome_window.toplevel, text = "Welcome! Thank you for using MyDICOMvisual", bg = 'grey', fg = 'white', font = (MyDICOMvisual.fontstyle, '20'))
     instructions = tk.Label(welcome_window.toplevel, text = "Click below to get started", bg = 'grey', fg = 'white', font = (MyDICOMvisual.fontstyle, '10'))
-    New_File_Welcome = CustomButton.Button(root= welcome_window.toplevel, relxpos = 0.5, relypos = 0.6, width  = 100, height = 50,
+    New_File_Welcome = CustomButton.Button(master= MyDICOMvisual, root= welcome_window.toplevel, relxpos = 0.5, relypos = 0.6, width  = 100, height = 50,
                 text = "Load File(s)", size_reduce = 3, command = MyDICOMvisual.load)
     welcome.place(relx = 0.5, rely = 0.2, anchor = 'center')
     instructions.place(relx = 0.5, rely = 0.4, anchor = 'center')

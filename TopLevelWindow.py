@@ -1,22 +1,22 @@
 import tkinter as tk
 
 class top_window:
-    def __init__(self, parent, width, height, title, color = 'black'):
-        self.parent = parent
-
+    def __init__(self, master, root, width, height, title, color = 'black'):
+        self.master = master
+        self.root = root
         self.height = height
         self.width = width
         self.color= color
-        self.toplevel = tk.Toplevel(self.parent.root)
+        self.toplevel = tk.Toplevel(self.root)
         self.toplevel.geometry("{}x{}".format(self.width,self.height))
         self.toplevel.title(title)
         self.toplevel.configure(bg = color)
         self.toplevel.resizable(False, False) 
-        rootx = self.parent.root.winfo_x()
-        rooty = self.parent.root.winfo_y()
+        rootx = self.root.winfo_x()
+        rooty = self.root.winfo_y()
         self.toplevel.geometry("+%d+%d" % ((
-            rootx + self.parent.root.winfo_screenwidth()/2 - self.width/2), (
-            rooty + self.parent.root.winfo_screenheight()/2 - self.height/2)))
+            rootx + self.root.winfo_screenwidth()/2 - self.width/2), (
+            rooty + self.root.winfo_screenheight()/2 - self.height/2)))
         self.toplevel.attributes('-topmost', True)
         self.toplevel.focus_force()
 
