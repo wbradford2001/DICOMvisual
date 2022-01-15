@@ -11,31 +11,33 @@ import PixelDisplay
 
 def load_file(master):
 
-
+        
         files = filedialog.askopenfilenames(title = 'Select Dicom File(s)', filetypes=[("DICOM", '.dcm')])
         #try:
+        if (len(files)) != 0:
+            master.loading_window, master.loading_bar = TopLevelWindow.loading_win(master = master, root = master.root, number_of_loads = 5 + len(files) + len(files))
+            # master.loading_window = TopLevelWindow.top_window(master = master, root = master.root, width = 600, height = 250, title = "Loading Files", color = 'grey')
+            # master.loading_bar = LoadingBar.loading_bar(master = master, parent = master.loading_window, root = master.loading_window.toplevel, 
+            #                                     number_of_loads = 5 + len(files) + len(files), 
+            #                                     height = 80, 
+            #                                     xpos = 50, 
+            #                                     ypos = 100, 
+            #                                     text_message = "Loading File Data", 
+            #                                     text_y_offset = 100)
+            
+            dfs = []
+            dfs_metas = []
+            image_names = []
+            for file in files:
+                master.loading_bar.increase_width("Reading Files")
+                temp_df = pydicom.dcmread(file)
+                dfs.append(temp_df)
+                dfs_metas.append(temp_df.file_meta)
+                image_names.append(os.path.basename(file))
 
-        master.loading_window = TopLevelWindow.top_window(master = master, root = master.root, width = 600, height = 400, title = "Loading Files", color = 'grey')
-        master.loading_bar = LoadingBar.loading_bar(master = master, parent = master.loading_window, root = master.loading_window.toplevel, 
-                                            number_of_loads = 5 + len(files) + len(files), 
-                                            height = 80, 
-                                            xpos = 50, 
-                                            ypos = 200, 
-                                            text_message = "Loading File Data", 
-                                            text_y_offset = 100)
-        
-        dfs = []
-        dfs_metas = []
-        image_names = []
-        for file in files:
-            master.loading_bar.increase_width("Reading Files")
-            temp_df = pydicom.dcmread(file)
-            dfs.append(temp_df)
-            dfs_metas.append(temp_df.file_meta)
-            image_names.append(os.path.basename(file))
-
-        return files, dfs, dfs_metas, image_names, False
-        
+            return files, dfs, dfs_metas, image_names, False
+        else:
+            return False, False, False, False, True
         # except Exception as e:
 
         #     loading_window.toplevel.destroy()

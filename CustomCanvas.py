@@ -2,18 +2,18 @@ import tkinter as tk
 
 
 class CustomCanv:
-    def __init__(self, master, root, color, relposx, relposy, relwidth, relheight, anchor = 'nw'):
+    def __init__(self, master, parent, root, color, relposx, relposy, relwidth, relheight, anchor = 'nw'):
         self.master = master
         self.root = root
         self.color = color
         self.relposx = relposx
-        self.actualx = relposx * root.winfo_screenwidth()
-        self.actualy = relposy * root.winfo_screenheight()
+        self.actualx = relposx * parent.width
+        self.actualy = relposy * parent.height
         self.relposy = relposy
         self.relwidth = relwidth
-        self.actualwidth = self.relwidth * root.winfo_screenwidth()
+        self.actualwidth = self.relwidth * parent.width
         self.relheight = relheight
-        self.actualheight = self.relheight * root.winfo_screenheight()
+        self.actualheight = self.relheight * parent.height
         self.anchor = anchor
         self.canvobject = tk.Canvas(self.root, bg = color, highlightthickness=0)
     def show_self(self):

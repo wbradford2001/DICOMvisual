@@ -118,8 +118,10 @@ class pixel_display:
 
     def decide(self, e):
         self.display_image()
-
-        if e.y == (self.master.root.winfo_pointery()-self.parent_canv.actualy):
+        print(self.master.root.winfo_pointery())
+        print(e.y)
+        print(self.parent_canv.actualy)
+        if e.y == (self.master.root.winfo_pointery()-167):
              self.display_GUI()
     def display_GUI(self):
             if len(self.master.dfs) > 1:

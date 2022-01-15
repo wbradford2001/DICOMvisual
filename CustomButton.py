@@ -43,11 +43,15 @@ class Button:
             if self.anchor == 'center':
                 self.obj.config(bg = self.activeback)
                 self.obj.place_configure(width = self.width - self.size_reduce, height = self.height - self.size_reduce)
-
+        elif self.state == "DISABLED":
+            self.obj.config(bg = self.disabledback)
+            self.show_self()
     def  change_to_pressed(self, yo):
-        self.obj.config(bg = self.pressedback)
         if self.state == "ENABLED":
+            self.obj.config(bg = self.pressedback)         
             self.command()
+
+
 
     def  change_to_idle(self, yo):
         if self.state == "ENABLED":
@@ -65,10 +69,11 @@ class Button:
         self.state = "ENABLED"        
         self.obj.config(bg = self.idleback)
         self.obj.config(fg = 'white')
-        self.obj.place()
+
+        self.show_self()
 
     def disable(self):
         self.state = "DIABLED"
         self.obj.config(bg = self.disabledback)
         self.obj.config(fg = 'grey')
-        self.obj.place()
+        self.show_self()
