@@ -17,9 +17,9 @@ class top_window:
         self.toplevel.resizable(False, False) 
         
         rootx = self.root.winfo_x()
-        print(rootx)
+
         rooty = self.root.winfo_y()
-        print(rooty)        
+   
         self.toplevel.geometry("+%d+%d" % ((
             34 + self.master.width/2 - self.width/2), (
             59 + self.master.height/2 - self.height/2)))
@@ -29,13 +29,13 @@ class top_window:
 
 
 
-def loading_win(master, root, number_of_loads, width = 500, height = 300):
+def loading_win(master, root, number_of_loads, width = 500, height = 300, message = "Loading File Data"):
     
-    loading_window = top_window(master = master, root = root, width = 500, height = 300, title = "Loading", color = 'grey')
+    loading_window = top_window(master = master, root = root, width = width, height = height, title = "Loading", color = 'grey')
     loading_bar = LoadingBar.loading_bar(master = master, parent = loading_window, root = loading_window.toplevel, 
                                             number_of_loads = number_of_loads,
                                             relheight = 0.2, 
-                                            text_message = "Loading File Data", 
+                                            text_message = message, 
                                             )
     return loading_window, loading_bar
 
@@ -65,23 +65,15 @@ def just_one_or_many(master, root, message, image_name, proceed_command, width =
 
 
 
-    Just_One_Or_All = "All"
-    Just_One_Or_All_Menu = CustomRadioButton.RadioMenu(master = master, root = just_one_or_many_wind.toplevel, variable = Just_One_Or_All, background_color = 'grey',
-        size_reduce = 3, height = 50, width = 50)
 
-    Just_One_Or_All_Menu.add_button("Just One", xpos = just_one_or_many_wind.width*0.4, relypos = 0.4, text = "Just " + str(image_name))
-    Just_One_Or_All_Menu.add_button("All", xpos = just_one_or_many_wind.width*0.4, relypos = 0.65, text = "All Files", selected = True)
-    
-    # just_one = CustomRadioButton.RadioButton(master = master, root = just_one_or_many_wind.toplevel,
-    #             xpos = just_one_or_many_wind.width*0.4, relypos = 0.4, width = 50, height = 50, text = "Just " + str(image_name), size_reduce = 3, background_color='grey')
-    # just_one.show_self()
+    Just_One_Or_All_Menu = CustomRadioButton.RadioMenu(master = master, root = just_one_or_many_wind.toplevel,
+        background_color='grey', height = 50, width = 50)
 
-    # many = CustomRadioButton.RadioButton(master = master, root = just_one_or_many_wind.toplevel,
-    #             xpos = just_one_or_many_wind.width*0.4, relypos = 0.65, width = 50, height = 50, text = "All Files", size_reduce = 3, background_color='grey')
-    # many.show_self()
+    Just_One=Just_One_Or_All_Menu.add_button(value = "Just One", xpos = just_one_or_many_wind.width * 0.3, ypos = just_one_or_many_wind.height * 0.4,
+         text = "Just " + str(image_name))
+    All = Just_One_Or_All_Menu.add_button(value = "All", xpos = just_one_or_many_wind.width * 0.3, ypos = just_one_or_many_wind.height * 0.6,
+         text = "All Files", selected = True)
 
-    # many.change_to_pressed(6)
-    # many.show_self()
 
     proceed = CustomButton.Button(master = master, root = just_one_or_many_wind.toplevel, relxpos = 0.5, 
                         relypos = 0.9, width = 100, height = 50, text = "Proceed", size_reduce = 3, command = lambda : proceed_command(Just_One_Or_All_Menu.variable))

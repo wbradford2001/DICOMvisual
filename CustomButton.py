@@ -66,7 +66,8 @@ class Button:
     def hide_self(self):
         self.obj.place_forget()
     def enable(self):
-        self.state = "ENABLED"        
+
+        self.state = "ENABLED"      
         self.obj.config(bg = self.idleback)
         self.obj.config(fg = 'white')
 

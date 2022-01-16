@@ -100,9 +100,11 @@ class app:
             '0040': 'Text Information'                           
         }
         keys_included = []
-        for key in self.display_strings['0'].keys():
-            if key in self.matches:
-                keys_included.append(key)
+        for index, df in enumerate(self.dfs):
+            for key in self.display_strings[str(index)].keys():
+                if key in self.matches:
+                    if key not in keys_included:
+                        keys_included.append(key)
         self.text_boxes = {}
         num_boxes = len(keys_included)
         for index, key in enumerate(keys_included):
@@ -162,17 +164,17 @@ class app:
         elif from_existing_df == True:
             self.loading_window, self.loading_bar = TopLevelWindow.loading_win(master = self, root = self.root, number_of_loads = 5 + len(self.files) )
             errorflag = False
-            # self.loading_window = TopLevelWindow.top_window(master = self, root = self.root, width = 600, height = 250, title = "Loading Files", color = 'grey')
-            # self.loading_bar = LoadingBar.loading_bar(master = self, parent = self.loading_window, root = self.loading_window.toplevel, 
-            #                                 number_of_loads = 5 + len(self.files), 
-            #                                 height = 80, 
-            #                                 xpos = 50, 
-            #                                 ypos = 100, 
-            #                                 text_message = "Loading File Data", 
-            #                                 text_y_offset = 100)
+
         if errorflag == False: 
             self.define_canvases_and_dividers()
-            [self.MainView, self.SideView1, self.SideView2, self.display_strings, errorflag] = LoadFileCascade.populate_data_stuff(master = self)                    
+            [self.MainView, self.SideView1, self.SideView2, self.display_strings, errorflag] = LoadFileCascade.populate_data_stuff(master = self)                               
+            #if from_existing_df == True:
+                # print(list(self.display_strings['0'].keys()))
+                # print()
+                # print(list(self.display_strings['1'].keys()))
+                # print()
+                # print(list(self.display_strings['2'].keys()))      
+                # print()                  
             self.define_display_boxes_and_image_indicators()
             self.show_all()
 
@@ -186,13 +188,13 @@ class app:
 
 
             self.cascade = CustomDFEdit.full_df_cascade()
-
+            
     def view_full_df(self):
 
         self.cascade.create_full_df_toplevel(master = self, view_or_edit = 'view')
         
     def custom_df_edit(self):
-        self.cascade.create_full_df_toplevel(master = self, view_or_edit = 'ENABLED')
+        self.cascade.create_full_df_toplevel(master = self, view_or_edit = 'edit')
 
     def decide_export(self):
         if len(self.dfs) > 1:
@@ -234,74 +236,8 @@ class app:
 
 
 
-        # if len(dfs) > 1:
-        #     CustomDFEdit.final_save_changes.bind('<Button>', save_changes_Edit_DF)
-        # else:
-        #     CustomDFEdit.save_button.bind('<Button>', save_changes_Edit_DF)
-
-    # def save_changes_Edit_DF(self, hi):
-    #     global MainView
-    #     global SideView1
-    #     global SideView2
-    #     global display_strings
-    #     CustomDFEdit.Full_DF_Wind.toplevel.destroy()
-    #     try:
-    #         CustomDFEdit.just_one_or_all_files.toplevel.destroy()
-    #     except:
-    #         pass
-    #     loading_window = TopLevelWindow.top_window(root, 600, 400, title = "Loading Files", color = 'grey')
-    #     loading_bar = LoadingBar.loading_bar(parent = loading_window, 
-    #                                         number_of_loads = 5 + len(files), 
-    #                                         height = 80, 
-    #                                         xpos = 50, 
-    #                                         ypos = 200, 
-    #                                         text_message = "Editing File Data", 
-    #                                         fontstyle = fontstyle,
-    #                                         fontsize = 30,
-    #                                         text_y_offset = 100)
-    #     if CustomDFEdit.option.get() == "Just One":
-    #         dfs[int(MainView.currentim.get())] = CustomDFEdit.save_changes_regular(dfs[int(MainView.currentim.get())])
-    #         dfs_metas[int(MainView.currentim.get())] = CustomDFEdit.save_changes_meta(dfs_metas[int(MainView.currentim.get())])  
-
-    #     elif CustomDFEdit.option.get() == "All":
-    #         for index, dataframe in enumerate(dfs):
-    #             dataframe = CustomDFEdit.save_changes_regular(dataframe)
-    #         for index, dataframe in enumerate(dfs_metas):
-    #             dataframe = CustomDFEdit.save_changes_meta(dataframe)
-
-    #     [MainView, SideView1, SideView2, display_strings, errorflag] = LoadFileCascade.populate_data_stuff(loading_window = loading_window, loading_bar = loading_bar, 
-    #                             root=root, fontstyle=fontstyle, dfs=dfs, dfs_metas=dfs_metas, 
-    #                             image_names=image_names,
-    #                             input_disp_str_func=display_display_strings)
-    #     master_funcs.display_new_dfs_and_dfs_meta(MainView,dfs, SideView1, SideView2)
-
-    # def decide_export(self):
-    #     if len(dfs) == 1:
-    #         global option
-    #         option = tk.StringVar()
-    #         option.set("Just One")
-    #         ExportCascade.pull_up_window(root=root, fontstyle=fontstyle, dfs=dfs, dfs_metas=dfs_metas, MainView=MainView, image_names=image_names, option = option)
-    #     elif len(dfs) >1:
-    #         ExportCascade.produce_just_one_or_all_files_window(root=root, fontstyle=fontstyle, image_names=image_names, MainView=MainView, dfs=dfs, dfs_metas=dfs_metas)
-    # def clear(self):
-    #     for key, box in text_boxes.items():
-    #             box.text_box_label.destroy()
-    #             box.label.destroy()
-
-    #     master_funcs.clear_pixel_array(MainView)
-
-    #     MainView.image_text_label.place_forget()
-
-
-    #     if len(dfs) > 1:
-    #         master_funcs.clear_pixel_array(SideView1)
-    #         master_funcs.clear_pixel_array(SideView2)
-
-
-    #     master_funcs.configure_buttons("DISABLED", [View_Full_DF, Custom_DF_Edit, Export_DICOM_file, Clear])
-
-
 if __name__ == "__main__":
+    
     MyDICOMvisual = app()
 
     MyDICOMvisual.define_menus()

@@ -1,3 +1,4 @@
+from re import M
 import tkinter as tk
 import numpy as np
 from tkinter import filedialog
@@ -41,7 +42,7 @@ def load_file(master):
         # except Exception as e:
 
         #     loading_window.toplevel.destroy()
-        #     print(e)
+
         #     EW = TopLevelWindow.show_error_window(root, fontstyle, message="Unable to Load File(s)", ErrorString = e)
         #     return False, False, False, False
 def load_df_data(dfs, dfs_metas, loading_bar):
@@ -64,6 +65,8 @@ def load_df_data(dfs, dfs_metas, loading_bar):
     for index, dataframe in enumerate(dfs):
         loading_bar.increase_width("Extracting Data Elements")
         #master_dict_of_catagories[str(index)] = {}
+
+
         for element in dataframe:
             if (str(element.tag)[1:5]) not in master_dict_of_catagories[str(index)]:
                 master_dict_of_catagories[str(index)][(str(element.tag)[1:5])] = {}
@@ -89,6 +92,8 @@ def load_df_data(dfs, dfs_metas, loading_bar):
             SideView1_arr.append(MainView_arr[:, :, k])
     SideView1_arr = np.array(SideView1_arr)  
 
+
+
     master_dict_display_strings = {}
     for key, value in master_dict_of_catagories.items():
         master_dict_display_strings[str(key)] = value.copy()
@@ -107,7 +112,16 @@ def load_df_data(dfs, dfs_metas, loading_bar):
     SideView1_aspect=(ps[1]/ss)
     SideView2_aspect=(ss/ps[0])
 
+         
+    total_keys = []
+    for display_string in master_dict_display_strings.values():
+        total_keys.extend(display_string.keys())
 
+    unique_keys = (np.unique(total_keys))
+    for index, display_string in master_dict_display_strings.items():
+        for key in unique_keys:
+            if key not in display_string.keys():
+                master_dict_display_strings[index][key] = ""
 
     return master_dict_display_strings, MainView_arr, MainView_aspect, SideView1_arr, SideView1_aspect, SideView2_arr, SideView2_aspect
 
@@ -165,5 +179,5 @@ def populate_data_stuff(master):
         
     #     loading_window.toplevel.destroy()
     #     EW = TopLevelWindow.show_error_window(root, fontstyle, message="Unable to Load File(s)", ErrorString = e)
-    #     print(e)
+
     #     return MainView, SideView1, SideView2, display_strings, True

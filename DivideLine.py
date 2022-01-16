@@ -23,7 +23,7 @@ class Divider:
     def mouse_exit(self, yo):
         self.obj.config(bg = Divider.color)
     def move(self, yo):
-        print(yo.y_root)
+        pass
 
 
     def show_self(self):
