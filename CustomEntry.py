@@ -23,7 +23,7 @@ class CustomEntryClass:
         self.xpos = xpos
         self.state = state
         self.text = tk.StringVar()
-        if len(str(text))< 60:
+        if len(str(text))< 200:
             self.text.set(str(text))
         else:
             self.text.set("Unable to display date element with string")
@@ -34,7 +34,7 @@ class CustomEntryClass:
         self.idleback = idlecolor
         self.activeback = activecolor
         self.pressedback= pressedcolor
-        self.obj = tk.Label(self.root, bg = self.idleback, borderwidth=2, text = self.text.get())
+        self.obj = tk.Label(self.root, bg = self.idleback, borderwidth=2, text = self.text.get(),wraplength=self.width*0.9)
 
 
 
@@ -68,12 +68,13 @@ class CustomEntryClass:
     def  change_to_pressed(self, yo):
         if self.state == "ENABLED":
             self.obj.config(bg = self.pressedback)
+            self.new_wind_open = True
             self.new_wind = TopLevelWindow.top_window(master = self.master, root= self.root, width = 600, height=200, title = "Edit Data Element", color= 'grey')
             text_string = "Change Data Element:\n" + str(self.element.tag) + ": " + str(self.element.keyword)
             current_val = tk.Label(self.new_wind.toplevel, text =  text_string, bd = 0, bg = 'grey', fg='white', font = self.master.fontstyle)
             current_val.place(relx = 0.5, rely = 0.25, relwidth = 0.8, relheight = 0.5, anchor = 'center')
 
-            self.Accept_change = CustomButton.Button(master = self.master, root = self.new_wind.toplevel, relxpos = 0.5, relypos = 0.75, width = 100, height = 30, text = "Accept Change", size_reduce=3, command = self.set_new_val ,state = "DISABLED")
+            self.Accept_change = CustomButton.Button(master = self.master, root = self.new_wind.toplevel, relx = 0.5, rely = 0.75, width = 100, height = 30, text = "Accept Change",  command = self.set_new_val ,state = "DISABLED")
 
             data_entry = tk.Entry(self.new_wind.toplevel, textvariable = self.text, justify = tk.CENTER)
             self.text.trace_add('write', self.enable_accept)
@@ -81,7 +82,9 @@ class CustomEntryClass:
             data_entry.bind("<Return>", self.set_new_val)
 
     def enable_accept(self, x, y, z):
-        self.Accept_change.enable()
+        if self.new_wind_open == True:
+            self.Accept_change.enable()
+
           
 
 
@@ -111,6 +114,7 @@ class CustomEntryClass:
     def set_new_val(self, *args):
         self.obj.config(fg = 'white')
         self.new_wind.toplevel.destroy()
+        self.new_wind_open = False
         self.obj.config(bg = self.idleback)
         self.show_self()
 

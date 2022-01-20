@@ -13,7 +13,7 @@ class delete_cascade:
         self.master = master
         self.parent_cascade = parent_cascade
         self.ButtonList = ButtonList
-        if len(self.master.dfs) > 1:
+        if self.master.multiple_images == True:
             just_o_o_m_wind = TopLevelWindow.just_one_or_many(master=master, root=parent_cascade.Full_DF_Wind.toplevel, 
                         message = "Would you like to delete Element(s) for just " + str(master.image_names[master.MainView.currentim.get()]) + " or for all files?", 
                         image_name = str(master.image_names[master.MainView.currentim.get()]), proceed_command = self.final_delete)

@@ -178,5 +178,5 @@ class save_cascade:
         box.recolor_text('red')
         TopLevelWindow.show_error_window(master = self.master, root = self.input_full_df_cascade.Full_DF_Wind.toplevel, 
                         message = "Unable to Save Changes", width = 300, height = 100, ErrorString = message_text)
-        if len(self.master.dfs) > 1:
+        if self.master.multiple_images == True:
             self.input_full_df_cascade.just_one_or_many_wind.toplevel.destroy()

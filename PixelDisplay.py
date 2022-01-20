@@ -18,6 +18,7 @@ class pixel_display:
         self.arr = arr
         self.aspect = aspect
         self.main_or_side = main_or_side
+        self.already_moving = False
 
         #tkcanvas stuff
         self.figure1 = plt.Figure(figsize=(5,5), dpi=pixel_display.dpi)
@@ -37,18 +38,18 @@ class pixel_display:
         self.scale.bind('<B1-Motion>', self.decide)
       
         #title
-        self.title_text = tk.Label(self.parent_canv.canvobject, text = self.title, bg = 'black', fg = 'white', font = (self.master.fontstyle, 14))
+        self.title_text = tk.Label(self.parent_canv.canvobject, text = self.title, bg = 'black', fg = 'white', font = (self.master.fontstyle, 14), wraplength = 2*self.parent_canv.actualwidth/2)
 
         #text box at bottom
         self.text_label = tk.Label(self.parent_canv.canvobject, bg = 'black', fg = 'white', font = (self.master.fontstyle, 8))
 
         #next
-        self.next_button = CustomButton.Button(master = self.master, root = self.parent_canv.canvobject, relxpos = self.parent_canv.actualwidth - 20 - 30, relypos = self.parent_canv.actualheight - DivideLine.Divider.buffer/2 - 15,
-                                width = 60, height = 30, text = 'Next', size_reduce = 3, command = self.next, show= False, placing = 'absolute')
+        self.next_button = CustomButton.Button(master = self.master, root = self.parent_canv.canvobject, x = self.parent_canv.actualwidth - 20 - 30, y = self.parent_canv.actualheight - DivideLine.Divider.buffer/2 - 15,
+                                width = 60, height = 30, text = 'Next',  command = self.next, show= False, )
 
         #back
-        self.back_button = CustomButton.Button(master = self.master, root = self.parent_canv.canvobject, relxpos = 20 + 30, relypos = self.parent_canv.actualheight - DivideLine.Divider.buffer/2 - 15,
-                                width = 60, height = 30, text = 'Previous', size_reduce = 3, command = self.back, show= False, placing = 'absolute')
+        self.back_button = CustomButton.Button(master = self.master, root = self.parent_canv.canvobject, x = 20 + 30, y = self.parent_canv.actualheight - DivideLine.Divider.buffer/2 - 15,
+                                width = 60, height = 30, text = 'Previous',  command = self.back, show= False, )
     
 
         #Go to entry
@@ -57,10 +58,10 @@ class pixel_display:
         self.goto_entry.config({"background": 'grey'})
         #Go to button
         self.goto_button = CustomButton.Button(master = self.master, root = self.parent_canv.canvobject,
-                                    relxpos = self.parent_canv.actualwidth - DivideLine.Divider.buffer/2 - 20 - 75/2, 
-                                    relypos = DivideLine.Divider.buffer/2 + 20/2 + 2, 
+                                    x = self.parent_canv.actualwidth - DivideLine.Divider.buffer/2 - 20 - 75/2, 
+                                    y = DivideLine.Divider.buffer/2 + 20/2 + 2, 
                                     width = 75, 
-                                    height = 20, text = "Set Frame", size_reduce = 3, command = self.go_to, placing='absolute', show = False)
+                                    height = 20, text = "Set Frame",  command = self.go_to, show = False)
 
 
 
@@ -72,7 +73,8 @@ class pixel_display:
                         -(ImageIndicator.image_indicator.height*len(self.arr)) + self.master.ImageIndicatorCanvas.actualheight/2+ImageIndicator.image_indicator.height/2]
                     )
     def show_self(self):
-        if len(self.master.dfs) > 1:
+        #if multiple frames
+        if self.master.multiple_images == True or self.master.multiframe == True: 
             self.scale.place(x = self.parent_canv.actualwidth - DivideLine.Divider.buffer/2, rely = 0.5, anchor= 'e', relheight = 1)
             #self.next_button.place(x = self.root.actualwidth - 20, y = self.root.actualheight - DivideLine.Divider.buffer/2, width = 60, height = 30, anchor = 'se')
             self.next_button.show_self()
@@ -117,12 +119,23 @@ class pixel_display:
             self.goto_entry.config(fg = 'red')
 
     def decide(self, e):
+        if self.already_moving == False and self.main_or_side == 'main':
+            for box in self.master.text_boxes.values():
+                    box.text_box_label.configure(bg = '#%02x%02x%02x' % (40, 40, 40))       
+            self.already_moving = True 
+            if self.master.multiple_images == True:
+                self.master.TempImageIndicatorCanvas.canvobject.config(bg = '#%02x%02x%02x' % (90, 90, 90))
+                for indicator in self.master.Image_Indicators.values():
+                    indicator.label.config(bg = '#%02x%02x%02x' % (90, 90, 90))
         self.display_image()
+
 
         if e.y == (self.master.root.winfo_pointery()-167):
              self.display_GUI()
+             self.already_moving = False
     def display_GUI(self):
-            if len(self.master.dfs) > 1:
+
+            if self.master.multiple_images == True:
                 self.text_label.config(text = ("Array Bounds: {} x {}\nCurrent Frame: {} out of {}").format(
                     self.arr.shape[1],
                     self.arr.shape[2],
@@ -131,18 +144,30 @@ class pixel_display:
                     ))
                 #set go to entry
                 self.tempcurrentim.set(self.currentim.get())
-            else:
+            elif self.master.multiple_images == False:            
                 self.text_label.config(text = ("Array Bounds: {} x {}").format(
                     self.arr.shape[1],
                     self.arr.shape[2],
                     ))
             #main stuff
             if self.main_or_side == "main":
-                #update display strings
-                for key, box in self.master.text_boxes.items():
-                    box.show_self(self.master.display_strings[str(self.currentim.get())][str(key)])
+                #update title
+                if self.master.multiframe == False:
+                    self.title_text.config(text = "Main View: " + str(self.master.image_names[self.currentim.get()]))
 
-                if len(self.master.dfs) > 1:
+                    #update display strings
+                    for key, box in self.master.text_boxes.items():
+                        box.text_box_label.configure(bg = 'black')
+                        box.show_self(self.master.display_strings[str(self.currentim.get())][str(key)])
+                elif self.master.multiframe == True:
+                    self.title_text.config(text = "Main View: " + str(self.master.image_names[0]))
+                    #update display strings
+                    for key, box in self.master.text_boxes.items():
+                        box.text_box_label.configure(bg = 'black')
+                        box.show_self(self.master.display_strings[str(0)][str(key)])                    
+                  
+
+                if self.master.multiple_images == True:
                     #set the current image indicators colors to grey
                     self.master.Image_Indicator.orig_color = 'grey'
                     self.master.Image_Indicator.color_to_original(yo = 3)
@@ -158,6 +183,11 @@ class pixel_display:
                     
                     )
 
+
+                    #recolor image indicators
+                    for indicator in self.master.Image_Indicators.values():
+                        indicator.label.config(bg = ImageIndicator.image_indicator.defaultbg)  
+                    self.master.TempImageIndicatorCanvas.canvobject.config(bg = ImageIndicator.image_indicator.defaultbg)
 
 
     def display_image(self):

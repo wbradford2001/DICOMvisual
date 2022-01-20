@@ -43,7 +43,7 @@ def show_error_window(master, root, message, width = 300, height = 100, ErrorStr
     unable_to_save = top_window(master = master, root = root, width = width, height = height, title = 'Error',
                 color= 'grey')
     unable_to_save_text_label = tk.Label(unable_to_save.toplevel, text = message, font = master.fontstyle,
-                                    bg= 'grey', fg = 'red')
+                                    bg= 'grey', fg = 'red', wraplength = unable_to_save.width * 0.8)
     if ErrorString != None:
         unable_to_save_text_label.place(relx = 0.5, rely = 0.2, anchor= 'center')
         error = tk.Text(unable_to_save.toplevel, font = master.fontstyle, fg = 'white', bg = 'grey', highlightthickness=0)
@@ -75,7 +75,7 @@ def just_one_or_many(master, root, message, image_name, proceed_command, width =
          text = "All Files", selected = True)
 
 
-    proceed = CustomButton.Button(master = master, root = just_one_or_many_wind.toplevel, relxpos = 0.5, 
-                        relypos = 0.9, width = 100, height = 50, text = "Proceed", size_reduce = 3, command = lambda : proceed_command(Just_One_Or_All_Menu.variable))
+    proceed = CustomButton.Button(master = master, root = just_one_or_many_wind.toplevel, relx = 0.5, 
+                        rely = 0.9, width = 100, height = 50, text = "Proceed",  command = lambda : proceed_command(Just_One_Or_All_Menu.variable))
 
     return just_one_or_many_wind

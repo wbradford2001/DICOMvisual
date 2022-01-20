@@ -1,4 +1,5 @@
 #imports
+from distutils.log import error
 import tkinter as tk
 import MenuButton
 import TopLevelWindow
@@ -30,46 +31,86 @@ class app:
         self.root.geometry("{}x{}".format(self.width,self.height))
         self.root.title('MyDICOMvisual')
         self.root.configure(bg = self.background)
+        self.full_df_cascade = CustomDFEdit.full_df_cascade(master = self)
+        self.load_file_cascade = LoadFileCascade.load_file_cascade(master = self)
+
+        self.multiple_images =  True
+        self.num_views = 3
+        self.multiframe = False
 
     def define_menus(self):
-        menubar = tk.Label(self.root, bg = '#%02x%02x%02x' % (30, 30, 30))
-        menubar.place(x = 0, y = 0, relwidth  = 1, height = MenuButton.menu_button.menubuttonheight)
-        self.Menu= MenuButton.menu_button(master = self, root= self.root, xpos= 0, width = 100, title = "Menu")
+
+        menubar = tk.Label(self.root, bg =  MenuButton.menu_button.top_botton_color)
+        menubar.place(x = 0, y = 0, relwidth = 1, height = MenuButton.menu_button.menubuttonheight)
+        self.File= MenuButton.menu_button(master = self, root= self.root, title = "File", relx= 1/10, relwidth = 1/5, anchor = 'center', num_buttons = 4)
+
+        self.Options= MenuButton.menu_button(master = self, root= self.root, title = "Options",  relx= 3/10, relwidth = 1/5, anchor = 'center', num_buttons = 1)
+
+
+        
+
+        self.NewFile = CustomButton.Button(master = self, root = self.File.canvobj, relx = 1/8, y = 0, relwidth = 1/4,  height =MenuButton.menu_button.canvasheight, 
+            text = 'Import File(s)', command = self.load, state = "ENABLED", anchor = 'n')  
+        self.Export_DICOM_file = CustomButton.Button(master = self, root = self.File.canvobj, relx = 3/8, y = 0, relwidth = 1/4,  height =MenuButton.menu_button.canvasheight, 
+            text = 'Export',  command = self.decide_export, state = "DISABLED", anchor = 'n')  
+        self.Clear = CustomButton.Button(master = self, root = self.File.canvobj, relx = 5/8, y = 0, relwidth = 1/4, height =MenuButton.menu_button.canvasheight, 
+            text = 'Clear', command = self.hide_all, state = "DISABLED",anchor = 'n')  
+        self.Exit = CustomButton.Button(master = self, root = self.File.canvobj, relx = 7/8, y = 0, relwidth = 1/4,  height =MenuButton.menu_button.canvasheight, 
+            text = 'Exit',command = self.root.destroy, state = "ENABLED", anchor = 'n')              
+
+
+        self.Custom_DF_Edit = CustomButton.Button(master = self, root = self.Options.canvobj, relx = 1/10, y = 0, relwidth = 1/5,  height =MenuButton.menu_button.canvasheight, 
+            text = 'Edit Data Element(s)', command = self.custom_df_edit, state = "DISABLED", anchor = 'n') 
+
+        self.Anonymize = CustomButton.Button(master = self, root = self.Options.canvobj, relx = 3/10, y = 0, relwidth = 1/5,  height =MenuButton.menu_button.canvasheight, 
+            text = 'Anonymize', command = self.anonymize, state = "DISABLED", anchor = 'n')             
+
+
+        self.Load_MonoPlanar_View = CustomButton.Button(master = self, root = self.Options.canvobj, relx = 5/10, y = 0, relwidth = 1/5,  height =MenuButton.menu_button.canvasheight, 
+            text = 'Load Monopanar View',  command = lambda: self.load(True, 1), state = "DISABLED", anchor = 'n')  
+        
+        self.Load_BiPlanar_View = CustomButton.Button(master = self, root = self.Options.canvobj, relx = 7/10, y = 0, relwidth = 1/5, height =MenuButton.menu_button.canvasheight, 
+            text = 'Load Biplanar View',  command = lambda: self.load(True, 3), state = "DISABLED", anchor = 'n')  
 
 
 
-        self.Clear = CustomButton.Button(master = self, root = self.Menu.canvobj, relxpos = 1/12, relypos = 0.5, width = self.width/6, height =MenuButton.menu_button.canvasheight, 
-            text = 'Clear', size_reduce=6, command = self.hide_all, state = "DISABLED")  
-        self.NewFile = CustomButton.Button(master = self, root = self.Menu.canvobj, relxpos = 3/12, relypos = 0.5, width = self.width/6, height =MenuButton.menu_button.canvasheight, 
-            text = 'Import File(s)', size_reduce=6, command = self.load, state = "ENABLED")  
-        self.Export_DICOM_file = CustomButton.Button(master = self, root = self.Menu.canvobj, relxpos = 5/12, relypos = 0.5, width = self.width/6+2, height =MenuButton.menu_button.canvasheight, 
-            text = 'Export', size_reduce=6, command = self.decide_export, state = "DISABLED")
         
-        self.View_Full_DF = CustomButton.Button(master = self, root = self.Menu.canvobj, relxpos = 7/12, relypos = 0.5, width = self.width/6, height =MenuButton.menu_button.canvasheight, 
-            text = 'View Full Data Frame', size_reduce=6, command = self.view_full_df, state = "DISABLED") 
+        self.View_Full_DF = CustomButton.Button(master = self, root = self.Options.canvobj,relx = 9/10, y = 0, relwidth = 1/5,  height =MenuButton.menu_button.canvasheight, 
+            text = 'View Full Data Frame',  command = self.view_full_df, state = "DISABLED", anchor = 'n')  
         
-        self.Custom_DF_Edit = CustomButton.Button(master = self, root = self.Menu.canvobj, relxpos = 9/12, relypos = 0.5, width = self.width/6, height =MenuButton.menu_button.canvasheight, 
-            text = 'Edit Data Element(s)', size_reduce=6, command = self.custom_df_edit, state = "DISABLED")
+        self.File.display_canvas(5)
+
         
-        self.Exit = CustomButton.Button(master = self, root = self.Menu.canvobj, relxpos = 11/12, relypos = 0.5, width = self.width/6, height =MenuButton.menu_button.canvasheight, 
-            text = 'Exit', size_reduce=6, command = self.root.destroy, state = "ENABLED")
+
         
     def define_canvases_and_dividers(self):     
         #define_canvases              
-        View_Top_Line_Pos = (MenuButton.menu_button.canvasheight + MenuButton.menu_button.menubuttonheight)/self.height
+        View_Top_Line_Pos = (MenuButton.menu_button.menubuttonheight)/self.height
         Text_Box_Top_Line_Pos = 0.7
         pixel_display_height = Text_Box_Top_Line_Pos - View_Top_Line_Pos
 
 
 
         self.MainViewCanvas = CustomCanvas.CustomCanv(master = self, parent = self, root = self.root, color = 'red', relposx = 0.3, relposy = View_Top_Line_Pos, relwidth = 0.3, relheight = pixel_display_height)
-
-        self.SideView1Canvas = CustomCanvas.CustomCanv(master = self, parent = self,root = self.root, color = 'black', relposx = 0, relposy = View_Top_Line_Pos, relwidth = 0.3, relheight = pixel_display_height)
         self.SideView2Canvas = CustomCanvas.CustomCanv(master = self, parent = self,root = self.root, color = 'black', relposx = 0.6, relposy = View_Top_Line_Pos, relwidth = 0.3, relheight = pixel_display_height)
-        self.TempImageIndicatorCanvas = CustomCanvas.CustomCanv(master = self, parent = self,root = self.root, color = '#%02x%02x%02x' % (70, 70, 70), relposx = self.SideView2Canvas.relposx + self.SideView2Canvas.relwidth, relposy = View_Top_Line_Pos, 
+
+        if self.num_views == 3:
+            self.SideView1Canvas = CustomCanvas.CustomCanv(master = self, parent = self,root = self.root, color = 'black', relposx = 0, relposy = View_Top_Line_Pos, relwidth = 0.3, relheight = pixel_display_height)
+        
+        if self.multiple_images == True:
+            self.TempImageIndicatorCanvas = CustomCanvas.CustomCanv(master = self, parent = self,root = self.root, color = '#%02x%02x%02x' % (70, 70, 70), relposx = self.SideView2Canvas.relposx + self.SideView2Canvas.relwidth, relposy = View_Top_Line_Pos, 
                                                         relwidth = 1-(self.SideView2Canvas.relposx + self.SideView2Canvas.relwidth), relheight = pixel_display_height)
-        self.ImageIndicatorCanvas = CustomCanvas.CustomCanv(master = self, parent = self,root = self.root, color = '#%02x%02x%02x' % (70, 70, 70), relposx = self.SideView2Canvas.relposx + self.SideView2Canvas.relwidth, relposy = View_Top_Line_Pos, 
+            self.ImageIndicatorCanvas = CustomCanvas.CustomCanv(master = self, parent = self,root = self.root, color = '#%02x%02x%02x' % (70, 70, 70), relposx = self.SideView2Canvas.relposx + self.SideView2Canvas.relwidth, relposy = View_Top_Line_Pos, 
                                                         relwidth = 1-(self.SideView2Canvas.relposx + self.SideView2Canvas.relwidth), relheight = pixel_display_height)
+        
+
+            self.SideView1toMainDivider = DivideLine.Divider(master = self, root = self.root, orientation = 'vertical', relposy = View_Top_Line_Pos, height = self.MainViewCanvas.actualheight + DivideLine.Divider.buffer/2, relposx = 0.3)
+
+            self.MainDividertoSideView2 = DivideLine.Divider(master = self, root = self.root, orientation = 'vertical', relposy = View_Top_Line_Pos, height = self.MainViewCanvas.actualheight + DivideLine.Divider.buffer/2, relposx = 0.6)
+
+        
+            self.SideView2toImageIndicator = DivideLine.Divider(master = self, root = self.root, orientation = 'vertical', relposy = View_Top_Line_Pos, height = self.MainViewCanvas.actualheight+ DivideLine.Divider.buffer/2, relposx = 0.9)
+
         
         self.TextBoxCanvas = CustomCanvas.CustomCanv(master = self, parent = self,root = self.root, color = 'black', relposx = 0, relposy = Text_Box_Top_Line_Pos, relwidth = 1, relheight = 1-Text_Box_Top_Line_Pos)
 
@@ -81,11 +122,8 @@ class app:
         self.Text_Box_Top_Line = DivideLine.Divider(master = self, root = self.root, orientation = 'horizontal', relposy = Text_Box_Top_Line_Pos, 
                 width = self.root.winfo_screenwidth())
 
-        self.SideView1toMainDivider = DivideLine.Divider(master = self, root = self.root, orientation = 'vertical', relposy = View_Top_Line_Pos, height = self.MainViewCanvas.actualheight + DivideLine.Divider.buffer/2, relposx = 0.3)
-
-        self.MainDividertoSideView2 = DivideLine.Divider(master = self, root = self.root, orientation = 'vertical', relposy = View_Top_Line_Pos, height = self.MainViewCanvas.actualheight + DivideLine.Divider.buffer/2, relposx = 0.6)
-
-        self.SideView2toImageIndicator = DivideLine.Divider(master = self, root = self.root, orientation = 'vertical', relposy = View_Top_Line_Pos, height = self.MainViewCanvas.actualheight+ DivideLine.Divider.buffer/2, relposx = 0.9)
+        
+        
 
     def define_display_boxes_and_image_indicators(self): 
 
@@ -110,7 +148,7 @@ class app:
         for index, key in enumerate(keys_included):
             self.text_boxes[key] = DataTextBox.data_window(master = self, root = self.TextBoxCanvas.canvobject, relposx = index/num_boxes, relposy = 0, title = self.matches[str(key)],width  = 1/num_boxes)
 
-        if len(self.dfs) > 1:
+        if self.multiple_images == True:
         #define_image_indicators()
             self.Image_Indicators = {}
             for index, name in enumerate(self.image_names):
@@ -118,86 +156,80 @@ class app:
             self.Image_Indicator = self.Image_Indicators[self.MainView.currentim.get()]
 
     def show_all(self):
-        if len(self.dfs) > 1:
+        print("Num Views: {}, MultiFrame: {}, multiple images: {}".format(self.num_views, self.multiframe, self.multiple_images))
+        if self.multiple_images == True:
             #show image indicator canvas
             self.ImageIndicatorCanvas.canvobject.place_configure(height = len(self.MainView.arr) * 20)
             #show_image_indicators
             for name, object in self.Image_Indicators.items():
                 object.show_self()
 
-        
+            #multiple views
+            if self.num_views == 3:
             #show canvases, divide lines, and Views
-            for index, obj in enumerate([self.MainViewCanvas, self.SideView1Canvas, self.SideView2Canvas, self.ImageIndicatorCanvas, self.TempImageIndicatorCanvas, self.TextBoxCanvas,
+                for index, obj in enumerate([self.MainViewCanvas, self.SideView1Canvas, self.SideView2Canvas, self.ImageIndicatorCanvas, self.TempImageIndicatorCanvas, self.TextBoxCanvas,
                                         self.View_Top_Line, self.Text_Box_Top_Line, self.SideView1toMainDivider, self.MainDividertoSideView2, self.SideView2toImageIndicator,
                                         self.MainView, self.SideView1, self.SideView2]):
-                obj.show_self()
-        else:
+                    obj.show_self()
+
+            #only 1 view
+            elif self.num_views == 1:
+                for index, obj in enumerate([self.MainViewCanvas, self.ImageIndicatorCanvas, self.TempImageIndicatorCanvas, self.TextBoxCanvas,
+                        self.View_Top_Line, self.Text_Box_Top_Line,
+                        self.MainView, self.SideView2toImageIndicator]):
+                    obj.show_self()
+        elif self.multiple_images == False:
             #show canvases, divide lines, and Views
-            
             for index, obj in enumerate([self.MainViewCanvas, self.TextBoxCanvas,
                                         self.View_Top_Line, self.Text_Box_Top_Line,
                                         self.MainView]):
                 obj.show_self()
         #NOTE: display boxes will be displayed when Views are displayed
     def hide_all(self):
-        master_funcs.configure_buttons("ENABLED", [self.NewFile])
+        print("Num Views: {}, MultiFrame: {}, multiple images: {}".format(self.num_views, self.multiframe, self.multiple_images))
 
-        if len(self.dfs) > 1:
+        master_funcs.configure_buttons("ENABLED", [self.NewFile])
+        master_funcs.configure_buttons("DISABLED", [self.Load_BiPlanar_View, self.Load_MonoPlanar_View, self.Anonymize, self.Custom_DF_Edit, self.View_Full_DF, self.Clear, self.Export_DICOM_file])        
+
+        #GET RID OF MAIN VIEW CANVAS
+        self.MainViewCanvas.hide_self()       
+        #GET RID OF TEXT BOXES
+        self.TextBoxCanvas.hide_self()
+        #GET RID OF TOP AND BOTTOM DIVIDERS
+        self.View_Top_Line.hide_self()
+        self.Text_Box_Top_Line.hide_self()
+
+        #MULTIPLE FRAMES - IMAGE INDICATORS
+        if self.multiple_images == True:
             #hide image indicator canvas
             self.ImageIndicatorCanvas.canvobject.place_forget()
+            self.TempImageIndicatorCanvas.canvobject.place_forget()   
+            self.SideView2toImageIndicator.hide_self()                  
 
-            #hide canvases, divide lines, and Views
-            for index, obj in enumerate([self.MainViewCanvas, self.SideView1Canvas, self.SideView2Canvas, self.ImageIndicatorCanvas, self.TempImageIndicatorCanvas, self.TextBoxCanvas,
-                                        self.View_Top_Line, self.Text_Box_Top_Line,self.SideView1toMainDivider, self.MainDividertoSideView2, self.SideView2toImageIndicator,
-                                        self.MainView, self.SideView1, self.SideView2]):
-                obj.hide_self()
-        else:
-            #hide canvases, divide lines, and Views
-            for index, obj in enumerate([self.MainViewCanvas, self.TextBoxCanvas,
-                                        self.View_Top_Line, self.Text_Box_Top_Line, 
-                                        self.MainView]):
-                obj.hide_self()
-    def load(self, from_existing_df = False):
-        if from_existing_df == False:
-            welcome_window.toplevel.destroy()
-            [self.files, self.dfs, self.dfs_metas, self.image_names, errorflag] = LoadFileCascade.load_file(master = self)
-        elif from_existing_df == True:
-            self.loading_window, self.loading_bar = TopLevelWindow.loading_win(master = self, root = self.root, number_of_loads = 5 + len(self.files) )
-            errorflag = False
+            #1 VIEW
+        if self.num_views == 3:  
+            self.SideView1Canvas.hide_self()
+            self.SideView2Canvas.hide_self()
+            self.SideView1toMainDivider.hide_self()
+            self.MainDividertoSideView2.hide_self()
+ 
 
-        if errorflag == False: 
-            self.define_canvases_and_dividers()
-            [self.MainView, self.SideView1, self.SideView2, self.display_strings, errorflag] = LoadFileCascade.populate_data_stuff(master = self)                               
-            #if from_existing_df == True:
-                # print(list(self.display_strings['0'].keys()))
-                # print()
-                # print(list(self.display_strings['1'].keys()))
-                # print()
-                # print(list(self.display_strings['2'].keys()))      
-                # print()                  
-            self.define_display_boxes_and_image_indicators()
-            self.show_all()
-
-            #delete menu
-            self.Menu.canvobj.place_forget()
-            self.Menu.buttonobj.place_forget()
-            #redefine menu
-            self.define_menus()
-            master_funcs.configure_buttons("ENABLED", [self.View_Full_DF, self.Custom_DF_Edit, self.Export_DICOM_file, self.Clear])
-            master_funcs.configure_buttons("DISABLED", [self.NewFile])
-
-
-            self.cascade = CustomDFEdit.full_df_cascade()
+    def load(self, from_existing_df = False, force_num_views = False):
+        self.load_file_cascade.load_file(from_existing_df= from_existing_df, force_num_views = force_num_views)
+        print()
             
     def view_full_df(self):
 
-        self.cascade.create_full_df_toplevel(master = self, view_or_edit = 'view')
+        self.full_df_cascade.create_full_df_toplevel(view_or_edit = 'view')
         
     def custom_df_edit(self):
-        self.cascade.create_full_df_toplevel(master = self, view_or_edit = 'edit')
+        self.full_df_cascade.create_full_df_toplevel(view_or_edit = 'edit')
+
+    def anonymize(self):
+        self.full_df_cascade.create_full_df_toplevel(view_or_edit = 'anonymize') 
 
     def decide_export(self):
-        if len(self.dfs) > 1:
+        if self.multiple_images == True:
             self.just_one_or_many_wind = TopLevelWindow.just_one_or_many(master = self, root = self.root
                         ,message = "Would you like to export just " + str(self.image_names[self.MainView.currentim.get()]) 
                                     + " or all files?", image_name = str(self.image_names[self.MainView.currentim.get()]) ,
@@ -205,7 +237,7 @@ class app:
         else:
             self.export_dfs("Just One")
     def export_dfs(self, one_or_all):
-        if len(self.dfs) > 1:
+        if self.multiple_images == True:
             self.just_one_or_many_wind.toplevel.destroy()
 
         if one_or_all == "Just One":
@@ -237,17 +269,17 @@ class app:
 
 
 if __name__ == "__main__":
-    
+    print(pydicom.__file__)
     MyDICOMvisual = app()
 
     MyDICOMvisual.define_menus()
 
 
-    welcome_window = TopLevelWindow.top_window(master = MyDICOMvisual, root = MyDICOMvisual.root, width = 500, height = 300, title = "Welcome!", color = 'grey')
-    welcome = tk.Label(welcome_window.toplevel, text = "Welcome! Thank you for using MyDICOMvisual", bg = 'grey', fg = 'white', font = (MyDICOMvisual.fontstyle, '20'))
-    instructions = tk.Label(welcome_window.toplevel, text = "Click below to get started", bg = 'grey', fg = 'white', font = (MyDICOMvisual.fontstyle, '10'))
-    New_File_Welcome = CustomButton.Button(master= MyDICOMvisual, root= welcome_window.toplevel, relxpos = 0.5, relypos = 0.6, width  = 100, height = 50,
-                text = "Load File(s)", size_reduce = 3, command = MyDICOMvisual.load)
+    MyDICOMvisual.welcome_window = TopLevelWindow.top_window(master = MyDICOMvisual, root = MyDICOMvisual.root, width = 500, height = 300, title = "Welcome!", color = 'grey')
+    welcome = tk.Label(MyDICOMvisual.welcome_window.toplevel, text = "Welcome! Thank you for using MyDICOMvisual", bg = 'grey', fg = 'white', font = (MyDICOMvisual.fontstyle, '20'))
+    instructions = tk.Label(MyDICOMvisual.welcome_window.toplevel, text = "Click below to get started", bg = 'grey', fg = 'white', font = (MyDICOMvisual.fontstyle, '10'))
+    New_File_Welcome = CustomButton.Button(master= MyDICOMvisual, root= MyDICOMvisual.welcome_window.toplevel, relx = 0.5, rely = 0.6, width  = 100, height = 50,
+                text = "Load File(s)",  command = MyDICOMvisual.load)
     welcome.place(relx = 0.5, rely = 0.2, anchor = 'center')
     instructions.place(relx = 0.5, rely = 0.4, anchor = 'center')
 

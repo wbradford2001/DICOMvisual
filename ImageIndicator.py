@@ -3,6 +3,7 @@ import tkinter as tk
 
 class image_indicator:
     height = 15
+    defaultbg = '#%02x%02x%02x' % (70, 70, 70)
     def __init__(self, master, root, text, index):
         self.master = master
         self.index = index
@@ -10,7 +11,7 @@ class image_indicator:
         self.root = root
 
 
-        self.label = tk.Label(self.root.canvobject, text= self.text, bg = '#%02x%02x%02x' % (70, 70, 70), fg = 'grey', 
+        self.label = tk.Label(self.root.canvobject, text= self.text, bg = image_indicator.defaultbg, fg = 'grey', 
             font = (self.master.fontstyle, 6))
         self.label.bind("<Enter>", self.recolor_to_yellow)
         self.label.bind("<Leave>", self.color_to_original)

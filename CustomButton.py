@@ -1,29 +1,45 @@
+from textwrap import wrap
 import tkinter as tk
+
+
+import placement
 
 class Button:
     defaultdisabedcolor ='#%02x%02x%02x' % (40, 40, 40)
     defaultidlecolor = '#%02x%02x%02x' % (70, 70, 70)
     defaultactivecolor = '#%02x%02x%02x' % (100, 120, 100)
     defaultpressedcolor = 'blue'
-    def __init__(self, master, root, relxpos, relypos, width, height,text, size_reduce, command,  
-            disabledback = defaultdisabedcolor, idleback=defaultidlecolor, activeback=defaultactivecolor, pressedback=defaultpressedcolor, state = 'ENABLED', show = True,
-            placing = 'relative', anchor = 'center'):
+    defaultxsize_reduce = 1
+    defaultysize_reduce = 1  
+    def __init__(self, master, root,text, command,  
+            disabledback = defaultdisabedcolor, idleback=defaultidlecolor, activeback=defaultactivecolor, pressedback=defaultpressedcolor, 
+            state = 'ENABLED', show = True, anchor = 'center', xsize_reduce = defaultxsize_reduce,ysize_reduce = defaultysize_reduce,
+            **kwargs):
+        
+        #necessary
         self.master = master
         self.root = root
-        self.relxpos = relxpos
-        self.relypos = relypos
-        self.width = width
-        self.height = height
+        self.text = text
+        self.command = command
+
+        #optional - back ground
         self.disabledback = disabledback
         self.idleback = idleback
         self.activeback = activeback
-        self.text = text
         self.pressedback = pressedback
-        self.size_reduce = size_reduce
-        self.placing = placing
-        self.anchor = anchor
-        self.obj  = tk.Label(self.root, text = self.text, borderwidth=2, font = self.master.fontstyle)
+
+        #optional - miscellaneous
         self.state = state
+        self.anchor = anchor
+        self.xsize_reduce = xsize_reduce
+        self.ysize_reduce = ysize_reduce        
+
+        #positional
+        self.__dict__.update(kwargs)
+        
+       
+       #object
+        self.obj  = tk.Label(self.root, text = self.text, borderwidth=2, font = self.master.fontstyle)
         if self.state == "ENABLED":
             self.obj.config(bg = self.idleback)
             self.obj.config(fg = 'white')
@@ -36,41 +52,39 @@ class Button:
         self.obj.bind('<ButtonRelease>', self.change_to_active) 
         if show == True:
             self.show_self()
-        self.command = command
-       
+
+
+    #mouse enters
     def change_to_active(self, yo):
         if self.state == "ENABLED":
-            if self.anchor == 'center':
-                self.obj.config(bg = self.activeback)
-                self.obj.place_configure(width = self.width - self.size_reduce, height = self.height - self.size_reduce)
-        elif self.state == "DISABLED":
-            self.obj.config(bg = self.disabledback)
-            self.show_self()
+            self.obj.config(bg = self.activeback)
+            placement.smart_place_configure_to_active(self.master, self)  
+        # elif self.state == "DISABLED":
+        #     self.obj.config(bg = self.disabledback)
+        #     self.show_self()
+
+    #mouse pressed
     def  change_to_pressed(self, yo):
         if self.state == "ENABLED":
-            self.obj.config(bg = self.pressedback)         
+            self.obj.config(bg = self.pressedback)                   
             self.command()
 
-
-
+    #mouse leaves
     def  change_to_idle(self, yo):
         if self.state == "ENABLED":
             self.obj.config(bg = self.idleback)
-            self.obj.place_configure(width = self.width , height = self.height )
+            placement.smart_place_configure_to_idle(self.master, self)
+
     def show_self(self):
-        if self.placing == "relative":
-            self.obj.place(relx= self.relxpos, rely = self.relypos, width = self.width, height = self.height, anchor = self.anchor)
-        elif self.placing == "absolute":
-            self.obj.place(x= self.relxpos, y = self.relypos, width = self.width, height = self.height, anchor = self.anchor)
+        placement.smart_place(self.master, self)
 
     def hide_self(self):
         self.obj.place_forget()
-    def enable(self):
 
+    def enable(self):
         self.state = "ENABLED"      
         self.obj.config(bg = self.idleback)
         self.obj.config(fg = 'white')
-
         self.show_self()
 
     def disable(self):

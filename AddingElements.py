@@ -6,7 +6,7 @@ import pydicom
 #fix me
 class add_element_entry:
     height = 50
-    def __init__(self, master, parent_cascade, root, startval, relx, relwidth):
+    def __init__(self, master, parent_cascade, root, startval, relx, relwidth, form = 'digit', partner = None):
         self.master = master
         self.parent_cascade = parent_cascade
         self.root = root
@@ -15,6 +15,8 @@ class add_element_entry:
         self.startval = startval
         self.relwidth = relwidth
         self.var.set(self.startval)
+        self.form = form
+        self.partner = partner
         self.obj = tk.Entry(self.root, textvariable = self.var, bg = '#%02x%02x%02x' % (200, 200, 200), fg= 'grey', 
                 highlightcolor='black', bd = 0, highlightthickness=2, relief = tk.RIDGE, 
                 justify=tk.CENTER, font = (self.master.fontstyle, 10))
@@ -22,25 +24,44 @@ class add_element_entry:
         self.obj.place(relx = self.relx, rely = 0.5, relwidth = self.relwidth, height = add_element_entry.height, anchor = 'center')
         self.obj.bind("<Button>", self.click_happened)
 
-        self.var.trace_add("write", self.edit_happened)
-        #self.var.trace("r", self.click_happened)        
+        self.var.trace_add("write", self.edit_happened)  
+
+
+        self.contains_digit = False      
       
     def click_happened(self, yo):
-        print("YO")
+        if self.form == 'digit':
+            self.parent_cascade.add_entry.disable()
 
         self.var.set("")
-        #self.var.set(self.var.get())
-
-
-
 
     def edit_happened(self, yo, u, e):
-        #if self.var.get() != self.startval:
-            print("TO")
+        
+        if self.form == 'digit':
+            #see if self contains digit
+            for char in self.var.get():
+                if char.isdigit():
+                    self.contains_digit = True
+                    
+                else:
+                    self.contains_digit = False
+
+            #if self contains digit, make self red
+            if self.contains_digit == True:
+                self.obj.config(fg = 'black')
+            elif self.contains_digit == False:
+                self.parent_cascade.add_entry.disable()
+                self.obj.config(fg = 'red')
+                
+            #see whether or not to disable button
+            if len(self.var.get()) > 0 and len(self.partner.var.get()) > 0 and self.contains_digit == True and self.partner.contains_digit == True:
+                self.parent_cascade.add_entry.enable()
+
+
+
+
+        else:
             self.obj.config(fg = 'black')
-
-
-            self.parent_cascade.add_entry.enable()
             #self.obj.select_range(0, tk.END)
 
 class add_element_cascade:
@@ -48,11 +69,11 @@ class add_element_cascade:
         self.master = master
         self.parent_cascade = parent_cascade
     def add_decide(self):
-        if len(self.master.dfs) > 1:
+        if self.master.multiple_images == True:
             just_o_a_wind = TopLevelWindow.just_one_or_many(master=self.master, root =self.parent_cascade.Full_DF_Wind.toplevel
             , message = "Add Element for Just " + str(self.master.image_names[self.master.MainView.currentim.get()]) + " or for all files?", 
             image_name = str(self.master.image_names[self.master.MainView.currentim.get()]), proceed_command = self.add)
-        else:
+        elif self.master.multiple_images == False:
             self.add("Just One")            
     def add(self, o_a):
         if o_a == "Just One":
