@@ -4,9 +4,13 @@ import tkinter as tk
 def smart_place(master, parent, obj = None):
     if obj == None:
         obj = parent.obj
-    print('\n')
 
- 
+
+     #relative all
+    try:
+        obj.place(relx = parent.relx, rely = parent.rely, relwidth = parent.relwidth, relheight = parent.relheight, anchor = parent.anchor)         
+    except AttributeError:
+        pass
 
 
     #relative placing, absolute dimensions

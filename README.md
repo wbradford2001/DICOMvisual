@@ -1,1 +1,1 @@
-This program enables users to upload a DICOM file(the standard file format for Medical Imaging) and view the corresponding data associated with it as well as the pixel array.
+This program enables users to upload a DICOM file(the standard file format for Medical Imaging) and view the corresponding data associated with it as well as the pixel array. Users can also anonymize the DICOM files, as well as edit/add/delete any data element.

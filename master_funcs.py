@@ -14,7 +14,15 @@ def map_ranges(range1, range2):
     y2 = range2[1]
     x1 = range1[0]
     x2 = range1[1]
-    #print("x1:{}, x2:{}, y1: {}, y2: {}".format(x1, x2, y1, y2))
     new_func = lambda x: ((y2-y1)/(x2-x1)) * (x - x1) + y1
 
     return  new_func
+
+def convert_elements_to_dict(elements):
+    new_dict = {}
+    for element in elements:
+        if str(element.tag)[1:5] not in new_dict:
+            new_dict[str(element.tag)[1:5]] = []
+        new_dict[str(element.tag)[1:5]].append(element)
+
+    return new_dict

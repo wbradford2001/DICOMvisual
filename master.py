@@ -1,21 +1,25 @@
 #imports
-from distutils.log import error
+
 import tkinter as tk
-import MenuButton
-import TopLevelWindow
-import DataTextBox
-import LoadingBar
-import CustomDFEdit
+import EditWindows.AnonymizeDF as AnonymizeDF
+import CustomThings.MenuButton as MenuButton
+import CustomThings.TopLevelWindow as TopLevelWindow
+import CustomThings.DataTextBox as DataTextBox
+
 import master_funcs
-import LoadFileCascade
-import ExportCascade
-import CustomCanvas
-import DivideLine
-import ImageIndicator
-import CustomButton
+import Cascades.LoadFileCascade as LoadFileCascade
+
+import CustomThings.CustomCanvas as CustomCanvas
+import CustomThings.DivideLine as DivideLine
+import CustomThings.ImageIndicator as ImageIndicator
+import CustomThings.CustomButton as CustomButton
 from tkinter import filedialog
 import pydicom
 import os
+import EditWindows.ViewFullDF as ViewFullDF
+import EditWindows.EditAddDelete as EditAddDelete
+import DataBaseStuff.AnonymizeDataBase as AnonymizeDataBase
+import EditWindows.ViewPrivateElements as ViewPrivateElements
 
 class app:
 
@@ -31,20 +35,22 @@ class app:
         self.root.geometry("{}x{}".format(self.width,self.height))
         self.root.title('MyDICOMvisual')
         self.root.configure(bg = self.background)
-        self.full_df_cascade = CustomDFEdit.full_df_cascade(master = self)
+
         self.load_file_cascade = LoadFileCascade.load_file_cascade(master = self)
 
-        self.multiple_images =  True
+        self.multiple_images =  None
         self.num_views = 3
         self.multiframe = False
+        self.o_a = None
+   
 
     def define_menus(self):
 
         menubar = tk.Label(self.root, bg =  MenuButton.menu_button.top_botton_color)
         menubar.place(x = 0, y = 0, relwidth = 1, height = MenuButton.menu_button.menubuttonheight)
-        self.File= MenuButton.menu_button(master = self, root= self.root, title = "File", relx= 1/10, relwidth = 1/5, anchor = 'center', num_buttons = 4)
+        self.File= MenuButton.menu_button(master = self, root= self.root, title = "File", relx= 1/20, relwidth = 1/10, anchor = 'center', num_buttons = 4)
 
-        self.Options= MenuButton.menu_button(master = self, root= self.root, title = "Options",  relx= 3/10, relwidth = 1/5, anchor = 'center', num_buttons = 1)
+        self.Options= MenuButton.menu_button(master = self, root= self.root, title = "Options",  relx= 3/20, relwidth = 1/10, anchor = 'center', num_buttons = 1)
 
 
         
@@ -59,25 +65,27 @@ class app:
             text = 'Exit',command = self.root.destroy, state = "ENABLED", anchor = 'n')              
 
 
-        self.Custom_DF_Edit = CustomButton.Button(master = self, root = self.Options.canvobj, relx = 1/10, y = 0, relwidth = 1/5,  height =MenuButton.menu_button.canvasheight, 
+
+        self.Custom_DF_Edit = CustomButton.Button(master = self, root = self.Options.canvobj, relx = 1/12, y = 0, relwidth = 1/5,  height =MenuButton.menu_button.canvasheight, 
             text = 'Edit Data Element(s)', command = self.custom_df_edit, state = "DISABLED", anchor = 'n') 
 
-        self.Anonymize = CustomButton.Button(master = self, root = self.Options.canvobj, relx = 3/10, y = 0, relwidth = 1/5,  height =MenuButton.menu_button.canvasheight, 
+        self.Anonymize = CustomButton.Button(master = self, root = self.Options.canvobj, relx = 3/12, y = 0, relwidth = 1/5,  height =MenuButton.menu_button.canvasheight, 
             text = 'Anonymize', command = self.anonymize, state = "DISABLED", anchor = 'n')             
 
 
-        self.Load_MonoPlanar_View = CustomButton.Button(master = self, root = self.Options.canvobj, relx = 5/10, y = 0, relwidth = 1/5,  height =MenuButton.menu_button.canvasheight, 
+        self.Load_MonoPlanar_View = CustomButton.Button(master = self, root = self.Options.canvobj, relx = 5/12, y = 0, relwidth = 1/6,  height =MenuButton.menu_button.canvasheight, 
             text = 'Load Monopanar View',  command = lambda: self.load(True, 1), state = "DISABLED", anchor = 'n')  
         
-        self.Load_BiPlanar_View = CustomButton.Button(master = self, root = self.Options.canvobj, relx = 7/10, y = 0, relwidth = 1/5, height =MenuButton.menu_button.canvasheight, 
+        self.Load_BiPlanar_View = CustomButton.Button(master = self, root = self.Options.canvobj, relx = 7/12, y = 0, relwidth = 1/6, height =MenuButton.menu_button.canvasheight, 
             text = 'Load Biplanar View',  command = lambda: self.load(True, 3), state = "DISABLED", anchor = 'n')  
-
-
-
         
-        self.View_Full_DF = CustomButton.Button(master = self, root = self.Options.canvobj,relx = 9/10, y = 0, relwidth = 1/5,  height =MenuButton.menu_button.canvasheight, 
+        self.View_Full_DF = CustomButton.Button(master = self, root = self.Options.canvobj,relx = 9/12, y = 0, relwidth = 1/6,  height =MenuButton.menu_button.canvasheight, 
             text = 'View Full Data Frame',  command = self.view_full_df, state = "DISABLED", anchor = 'n')  
         
+        self.View_private_elements = CustomButton.Button(master = self, root = self.Options.canvobj,relx = 11/12, y = 0, relwidth = 1/6,  height =MenuButton.menu_button.canvasheight, 
+            text = 'View Private Data Elements',  command = self.view_private_elements, state = "DISABLED", anchor = 'n')  
+
+
         self.File.display_canvas(5)
 
         
@@ -85,7 +93,7 @@ class app:
         
     def define_canvases_and_dividers(self):     
         #define_canvases              
-        View_Top_Line_Pos = (MenuButton.menu_button.menubuttonheight)/self.height
+        View_Top_Line_Pos = (MenuButton.menu_button.menubuttonheight + MenuButton.menu_button.canvasheight)/self.height
         Text_Box_Top_Line_Pos = 0.7
         pixel_display_height = Text_Box_Top_Line_Pos - View_Top_Line_Pos
 
@@ -123,7 +131,7 @@ class app:
                 width = self.root.winfo_screenwidth())
 
         
-        
+  
 
     def define_display_boxes_and_image_indicators(self): 
 
@@ -156,7 +164,6 @@ class app:
             self.Image_Indicator = self.Image_Indicators[self.MainView.currentim.get()]
 
     def show_all(self):
-        print("Num Views: {}, MultiFrame: {}, multiple images: {}".format(self.num_views, self.multiframe, self.multiple_images))
         if self.multiple_images == True:
             #show image indicator canvas
             self.ImageIndicatorCanvas.canvobject.place_configure(height = len(self.MainView.arr) * 20)
@@ -216,31 +223,31 @@ class app:
 
     def load(self, from_existing_df = False, force_num_views = False):
         self.load_file_cascade.load_file(from_existing_df= from_existing_df, force_num_views = force_num_views)
-        print()
             
     def view_full_df(self):
 
-        self.full_df_cascade.create_full_df_toplevel(view_or_edit = 'view')
+        self.ViewFullDFCascade = ViewFullDF.ViewFullDF(master = self, title = "Full Data Frame")
+
+    def view_private_elements(self):
+
+        self.PrivateElementCascade = ViewPrivateElements.ViewPrivateElements(master = self, title = "Private Data Elements")        
         
     def custom_df_edit(self):
-        self.full_df_cascade.create_full_df_toplevel(view_or_edit = 'edit')
+        #self.full_df_cascade.create_full_df_toplevel(view_or_edit = 'edit')
+        self.EditAddDeleteCascade = EditAddDelete.EditAddDelete(master = self, title = "Edit Data Frame")
 
     def anonymize(self):
-        self.full_df_cascade.create_full_df_toplevel(view_or_edit = 'anonymize') 
+        AnonymizeDataBase.populate_anon()
+        self.AnonymizeCascade = AnonymizeDF.AnonymizeDF(master = self, title = "Anonymize Data Frame")
 
     def decide_export(self):
-        if self.multiple_images == True:
-            self.just_one_or_many_wind = TopLevelWindow.just_one_or_many(master = self, root = self.root
-                        ,message = "Would you like to export just " + str(self.image_names[self.MainView.currentim.get()]) 
-                                    + " or all files?", image_name = str(self.image_names[self.MainView.currentim.get()]) ,
-                                    proceed_command = self.export_dfs)
-        else:
-            self.export_dfs("Just One")
-    def export_dfs(self, one_or_all):
-        if self.multiple_images == True:
-            self.just_one_or_many_wind.toplevel.destroy()
 
-        if one_or_all == "Just One":
+        TopLevelWindow.just_one_or_many(master = self, root = self.root, message = "Export for",
+                    proceed_command=self.export_dfs)
+    def export_dfs(self, o_a):
+
+        if o_a == "Just One":
+
                 save_dest_no_name = filedialog.asksaveasfile(title = 'Select Output Destination', defaultextension=".dcm")
                 
                 if not save_dest_no_name is None:
@@ -254,9 +261,16 @@ class app:
                     confirm_window = TopLevelWindow.top_window(master = self, root = self.root, width = 300, height = 200, title = "Success", color = 'grey')
                     success_text = tk.Label(confirm_window.toplevel, text = 'Successfully Saved as ' + str(save_dest),bg = 'grey', fg = 'white', wraplength = 200)
                     success_text.place(relx = 0.5, rely = 0.5, anchor = 'center')
-        elif one_or_all == "All":
-            save_dest = filedialog.askdirectory(title = 'Select Export Destination')
-            if len(save_dest) != 0:
+        elif o_a == "All":
+            save_dest_no_name = filedialog.asksaveasfile(title = 'Select Output Destination')
+
+            #save_dest = filedialog.askdirectory(title = 'Select Export Destination')
+            if not save_dest_no_name is None:
+                #os.mkdir(save_dest_no_name.name)
+                save_dest = save_dest_no_name.name
+                os.remove(save_dest)
+                os.mkdir(save_dest)
+                # print(save_dest)
                 for index, dataframe in enumerate(self.dfs):
                         new_save_str = os.path.join(save_dest,"edited_" + self.image_names[index])
                         dataframe.file_meta = self.dfs_metas[index]
@@ -269,7 +283,7 @@ class app:
 
 
 if __name__ == "__main__":
-    print(pydicom.__file__)
+
     MyDICOMvisual = app()
 
     MyDICOMvisual.define_menus()
