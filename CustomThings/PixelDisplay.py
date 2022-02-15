@@ -129,8 +129,9 @@ class pixel_display:
                     indicator.label.config(bg = '#%02x%02x%02x' % (90, 90, 90))
         self.display_image()
 
-
-        if e.y == (self.master.root.winfo_pointery()-167):
+        print(e.y)
+        print(self.master.root.winfo_pointery())
+        if e.y == (self.master.root.winfo_pointery()-147):
              self.display_GUI()
              self.already_moving = False
     def display_GUI(self):
