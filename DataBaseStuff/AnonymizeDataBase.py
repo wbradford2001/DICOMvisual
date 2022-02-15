@@ -1,57 +1,11 @@
 import selenium
 from selenium import webdriver
+import mysql.connector
 
 
 
-# from flask import Flask, request, jsonify
 
-# app = Flask(__name__)
-
-
-# @app.route('/', methods=['GET'])
-# def home():
-#     return "hi"
-
-# app.run()
-scrape = False
-def populate_anon():
-    if scrape == True:
-        driver = webdriver.Chrome("/Users/sipebradford/Documents/MyDICOMvisual/chromedriver")
-        driver.get("https://dicom.nema.org/medical/dicom/current/output/html/part15.html#chapter_E")
-        global anonymizable
-        anonymizable = []
-        errorflag = False
-        i = 0
-        while errorflag == False:
-            i = i+1
-            try:
-                print(i)
-                elem = driver.find_element_by_xpath('/html/body/div/div[18]/div[3]/div[4]/div[5]/div/table/tbody/tr[' + str(i) + ']')
-
-                #DELETE ME
-                # if i == 100:
-                #     errorflag = True
-    #==========================
-            except Exception as e:
-                print(e)
-                errorflag = True
-            for index, letter in enumerate(elem.text):
-                new_string = ""
-                if letter == "(":
-                    if elem.text[index + 1] != 'T':
-                        for j in range(0, 11):
-                            
-                            new_string = new_string + elem.text[index + j]
-                            if elem.text[index + j] == ",":
-                                new_string = new_string + " "
-                    break
-            anonymizable.append(new_string)
-            print(new_string)
-        print(anonymizable)
-#     print(len(anonymizable))
-    else:
-        global anonymizable
-        anonymizable = ['(0008, 0050)', '(0018, 4000)', '(0040, 0555)', '(0008, 0022)', 
+anonymizablelocal = ['(0008, 0050)', '(0018, 4000)', '(0040, 0555)', '(0008, 0022)', 
         '(0008, 002A)', '(0018, 1400)', '(0018, 11BB)', '(0018, 9424)', '(0008, 0032)', 
         '(0040, 4035)', '(0010, 21B0)', '', '(0038, 0010)', '(0038, 0020)', '(0008, 1084)', 
         '(0008, 1080)', '(0038, 0021)', '(0000, 1000)', '(0010, 2110)', '(006A, 0006)', 
@@ -151,4 +105,57 @@ def populate_anon():
                 '', '', '(0040, A030)', '(0040, A088)', '(0040, A075)', '(0040, A073)', '(0040, A027)', 
                 '(0038, 4000)', '(0018, 9371)', '(0018, 9373)', '(0018, 9367)', '(0018, 9367)']
 
+if __name__ == "__main__":
+#     if scrape == True:
+#         driver = webdriver.Chrome("/Users/sipebradford/Documents/MyDICOMvisual/chromedriver")
+#         driver.get("https://dicom.nema.org/medical/dicom/current/output/html/part15.html#chapter_E")
+#         global anonymizable
+#         anonymizable = []
+#         errorflag = False
+#         i = 0
+#         while errorflag == False:
+#             i = i+1
+#             try:
+#                 print(i)
+#                 elem = driver.find_element_by_xpath('/html/body/div/div[18]/div[3]/div[4]/div[5]/div/table/tbody/tr[' + str(i) + ']')
 
+#                 #DELETE ME
+#                 # if i == 100:
+#                 #     errorflag = True
+#     #==========================
+#             except Exception as e:
+#                 print(e)
+#                 errorflag = True
+#             for index, letter in enumerate(elem.text):
+#                 new_string = ""
+#                 if letter == "(":
+#                     if elem.text[index + 1] != 'T':
+#                         for j in range(0, 11):
+                            
+#                             new_string = new_string + elem.text[index + j]
+#                             if elem.text[index + j] == ",":
+#                                 new_string = new_string + " "
+#                     break
+#             anonymizable.append(new_string)
+#             print(new_string)
+#         print(anonymizable)
+# #     print(len(anonymizable))
+#     else:
+
+       
+
+        mydb = mysql.connector.connect(
+            host = "baj0wmaueyj0r1ai4hie-mysql.services.clever-cloud.com",
+            user = 'u1bj6ps5f4rfhhvf',
+            passwd = '1t1579wmsPVttIcgoJZR',
+            database = 'baj0wmaueyj0r1ai4hie')
+
+        mycursor = mydb.cursor()
+        mycursor.execute("DELETE FROM anonymizabletags")
+        mydb.commit()
+        for taganon in anonymizablelocal:
+            print(taganon)
+            sql = "INSERT INTO anonymizabletags (tag) VALUES (%s)"
+            val = taganon
+            mycursor.execute(sql, (val,))
+        mydb.commit()

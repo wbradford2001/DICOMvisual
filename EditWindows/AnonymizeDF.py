@@ -1,33 +1,78 @@
 import tkinter as tk
+
+from numpy import number
 import EditWindows.EditWindow as EditWindow
 import CustomThings.CustomCanvas as CustomCanvas
 import CustomThings.CustomButton as CustomButton
 import CustomThings.TopLevelWindow as TopLevelWindow
 import CustomThings.CustomEntry as CustomEntry
 import master_funcs
-import DataBaseStuff.AnonymizeDataBase as AnonymizeDataBase
-import DataBaseStuff.knownelements as knownelements
+import DataBaseStuff.AnonymizeDataBase
+
+import mysql.connector
 
 
 class AnonymizeDF(EditWindow.EditWindow):
+    
     def __init__(self, master, title):
+
         super().__init__(master, title)
 
+        #ANONYMIZED
+        try:
+  
+            anonymizedb = mysql.connector.connect(
+                host = "baj0wmaueyj0r1ai4hie-mysql.services.clever-cloud.com",
+                user = 'u1bj6ps5f4rfhhvf',
+                passwd = '1t1579wmsPVttIcgoJZR',
+                database = 'baj0wmaueyj0r1ai4hie'
+
+                )
+            self.master.loadingbar.increase_width()
+
+            mycursor = anonymizedb.cursor()       
+            mycursor.execute("SELECT tag FROM anonymizabletags")
+            myresult = mycursor.fetchall()
+
+
+
+
+            anonymizable = []
+            for x in myresult:
+                anonymizable.append(x[0])
+
+            self.master.loadingbar.increase_width()            
+
+                    
+            #PRIVATE     
+            mycursor.execute("SELECT tag FROM knownelements")
+            myresult = mycursor.fetchall()
+            knowntags = []
+            for x in myresult:
+                knowntags.append(x[0])            
+        except Exception as e:
+            print(e)
+            print("Using Local List of elements instead")
+            anonymizable = DataBaseStuff.AnonymizeDataBase.anonymizablelocal
+            self.master.loadingbar.increase_width() 
+            knowntags = DataBaseStuff.knownelements.elements
+            self.master.loadingbar.increase_width() 
+        self.master.loadingbar.increase_width()
         #populate anonymizable elements
         self.appendixEelements = []
         for element in self.all_elements:
-            if str(element.tag).upper() in AnonymizeDataBase.anonymizable or str(element.tag)[1:3] == "50":
+            if str(element.tag).upper() in anonymizable or str(element.tag)[1:3] == "50":
             
-                
-                self.appendixEelements.append(element) 
 
+                self.appendixEelements.append(element) 
+        self.master.loadingbar.increase_width()
         #populate private elements
         self.private_elements = []
         for element in self.all_elements:
-            if (((str(element.tag).upper() not in knownelements.elements))):
+            if (((str(element.tag).upper() not in knowntags))):
                
                 self.private_elements.append(element)
-
+                
         
 
 
@@ -57,7 +102,8 @@ class AnonymizeDF(EditWindow.EditWindow):
             button.change_to_pressed(5)
 
         self.show_canvas()
-  
+        self.master.loadingbar.increase_width() 
+        self.master.loadingwindow.toplevel.destroy()
 
     def define_canvases_and_elements(self, elements_width = 1,  radio_buttons = None, mode = 'regular'):
 
@@ -67,12 +113,10 @@ class AnonymizeDF(EditWindow.EditWindow):
 
         self.hex_5_digit_keys = []
         self.titles = []
-        for element in self.appendixEelements:
-            print(element.tag)
 
-        print('\n\n\n')
-        for element in self.private_elements:
-            print(element.tag)
+
+   
+
 
         if len(self.appendixEelements) < threshold:        
 
@@ -140,7 +184,7 @@ class AnonymizeDF(EditWindow.EditWindow):
             #delete element
         self.delete_all = CustomButton.Button(master = self.master, root = self.button_canvas.canvobject, relx = 0.75, rely = 0.5, relwidth = 0.5, relheight = 1.1, text = "Delete Element(s)",  command = None, 
                 state = "DISABLED", idleback = butt_idle, disabledback = disabledb)
-
+        
 #=================================================================
 
 

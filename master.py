@@ -237,7 +237,8 @@ class app:
         self.EditAddDeleteCascade = EditAddDelete.EditAddDelete(master = self, title = "Edit Data Frame")
 
     def anonymize(self):
-        AnonymizeDataBase.populate_anon()
+        #AnonymizeDataBase.populate_anon()
+        self.loadingwindow, self.loadingbar = TopLevelWindow.loading_win(master = self, root= self.root, number_of_loads = 6, message = "One Moment Please")      
         self.AnonymizeCascade = AnonymizeDF.AnonymizeDF(master = self, title = "Anonymize Data Frame")
 
     def decide_export(self):
