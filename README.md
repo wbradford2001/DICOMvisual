@@ -1,4 +1,4 @@
-#MyDICOMvisual
+# MyDICOMvisual
 ##Introduction
 DICOM(Digital Communications in Medicine) is a way of exchanging data that has been adopted by the majority of healthcare administrators. DICOM governs how patient, study, image, and other objects are described and transported across a network. MyDICOMvisual provides an easy way to view DICOM images(such as CT scan, MRI, ect...) as well as edit any data element or anonymize the whole dataset. See below for all the currently supported features.
 
