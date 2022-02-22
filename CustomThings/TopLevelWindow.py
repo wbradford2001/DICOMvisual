@@ -20,11 +20,16 @@ class top_window:
         rootx = self.root.winfo_x()
 
         rooty = self.root.winfo_y()
+
    
         self.toplevel.geometry("+%d+%d" % ((
             34 + self.master.width/2 - self.width/2), (
             59 + self.master.height/2 - self.height/2)))
         #self.master.root.eval(f'tk::PlaceWindow {str(self.toplevel)} center')
+
+
+
+
         self.toplevel.attributes('-topmost', True)
         self.toplevel.focus_force()
 

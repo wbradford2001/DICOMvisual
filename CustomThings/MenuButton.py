@@ -22,7 +22,7 @@ class menu_button:
         self.y = menu_button.menubuttonheight/2
 
         #objectsw
-        self.obj = tk.Label(root, bg = menu_button.top_botton_color, text = title, fg = 'white', font = self.master.fontstyle)        
+        self.obj = tk.Label(root, bg = menu_button.top_botton_color, text = title, fg = 'white', font = (self.master.fontstyle, 10))        
         placement.smart_place(master = self.master, parent = self)
         self.obj.bind('<Enter>', self.display_canvas)
 

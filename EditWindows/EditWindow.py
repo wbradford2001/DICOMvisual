@@ -6,6 +6,7 @@ import Cascades.SaveChanges as SaveChanges
 import CustomThings.CustomRadioButton as CustomRadioButton
 import Cascades.DeletingElements as DeletingElements
 import Cascades.AddingElements as AddingElements
+import CustomThings.CustomButton as CustomButton
 
 
 class EditWindow:
@@ -140,7 +141,8 @@ class EditWindow:
         else:
             self.title.place(x=0, y=0, relwidth = 1, height = CustomEntry.CustomEntryClass.height)
 
-
+        self.xbutton = CustomButton.Button(master = self.master, root = self.Full_DF_Wind.toplevel, command= self.Full_DF_Wind.toplevel.destroy, idleback= "red", anchor = 'nw', text = 'X', relx = 0, rely=0, width = 60, height = 30)
+        self.xbutton.show_self()
     
             
 

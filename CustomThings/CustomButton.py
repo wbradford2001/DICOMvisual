@@ -39,7 +39,7 @@ class Button:
         
        
        #object
-        self.obj  = tk.Label(self.root, text = self.text, borderwidth=2, font = self.master.fontstyle)
+        self.obj  = tk.Label(self.root, text = self.text, borderwidth=2, font = (self.master.fontstyle, 10))
         if self.state == "ENABLED":
             self.obj.config(bg = self.idleback)
             self.obj.config(fg = 'white')

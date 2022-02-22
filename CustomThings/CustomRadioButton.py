@@ -158,13 +158,17 @@ class RadioButton:
                                 button.entry_text.set(button.orig_string)
                                 button.entry_obj.config(state = 'disabled') 
                                 button.entry_obj.config(fg = 'grey')          
-                                button.entry_obj.config(bg = 'grey')                             
+                                button.entry_obj.config(bg = 'grey')
+                                                           
                     self.parent_menu.variable = self.value
-            if self.text == "Entry" and self.pressed == False:
+            #print(self.text, self.pressed)
+            if self.text == "Entry":
+                
                 self.entry_obj.config(state = 'normal')
                 self.entry_obj.config(fg = 'white')          
                 self.entry_obj.config(bg = 'grey')   
                 button.entry_text.trace_add('write', self.change_made)
+
     
     def depress(self, yo):                    
             #if its pressed already

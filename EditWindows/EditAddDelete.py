@@ -21,6 +21,8 @@ class EditAddDelete(EditWindow.EditWindow):
 
         self.show_canvas()
 
+        
+
 
     def define_canvases_and_elements(self, elements_width = 1, radio_buttons = None, mode = 'regular'):
         self.display_canvases = {}

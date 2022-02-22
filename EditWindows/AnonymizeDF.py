@@ -105,6 +105,8 @@ class AnonymizeDF(EditWindow.EditWindow):
         self.master.loadingbar.increase_width() 
         self.master.loadingwindow.toplevel.destroy()
 
+
+
     def define_canvases_and_elements(self, elements_width = 1,  radio_buttons = None, mode = 'regular'):
 
         #decide whether or not to split up canvases
@@ -263,3 +265,7 @@ class AnonymizeDF(EditWindow.EditWindow):
 
         self.delete_right_bound = tk.Label(self.display_canvases[self.hex_5_digit_keys[self.current_canvas]].canvobject, bg = 'white')
         self.delete_right_bound.place(relx=self.delete_column_bounds[1], y = CustomEntry.CustomEntryClass.height, width = 2, relheight = 1, anchor = 'n')
+
+
+        self.xbutton = CustomButton.Button(master = self.master, root = self.Full_DF_Wind.toplevel, command= self.Full_DF_Wind.toplevel.destroy, idleback= "red", anchor = 'nw', text = 'X', relx = 0, rely=0, width = 60, height = 30)
+        self.xbutton.show_self()
