@@ -46,8 +46,9 @@ DICOM(Digital Communications in Medicine) is a way of exchanging data that has b
   - Step 2: Start the Docker Daemon
   - Step 3: Pull down the Docker image onto your machine:
     Docker image: https://hub.docker.com/repository/docker/wjbradfo/securedicom
+    As of the time of this writing, the most current tag is "prototype1", however there may be a more recent tag by the time you read this. So feel free to use it.
     ```console
-    docker pull wjbradfo/securedicom
+    docker pull wjbradfo/securedicom:prototype1
     ```
   - Step 4: Run the docker container
    NOTE: Because secureDICOM is a graphical application, you need to give the container access to your display. Because this looks different on different operating systems, no command line examples are given here. Also note that you need to create a volume that maps the local DICOM files on your computer into your Docker container.
