@@ -80,3 +80,48 @@ Below is a tutorial for the basic menu buttons.
 #### View Private Data Elements
 - View all private Data Elements organized by group(private elements are selected by comparasin with a cloud database of known elements)
 
+
+
+## Task List
+- [ ] Encryption Fix:
+    > Create "Encryption" Menu to help users choose which Encryption Scheme to Apply to all Elements.
+- [ ] Pixel Data Editing:
+    > - [ ] Crop
+    > - [ ] Make custom pixel Edits(set the value of pixels with the mouse)
+    > - [ ] Add/Delete Pixel Overlay Data
+- [ ] DICOM Compatability Issue:
+    > - [ ] Support all defined VR's
+    > - [ ] Sort multiple images for correct 3D interpretation
+    > - [ ] Implement Window/Leveling
+    > - [ ] Display Overlay Data
+    > - [ ] Display warning for deleting mandatory elements
+    > - [ ] Change UIDs automatically upon editing
+- [ ] DataBase Fix:
+    > Store anonymization status and element type (1, 1C, 2, 2C) in centralized database
+- [ ] Bug List:
+    > - [ ] When there is no private data elements, have the pop up window display a message saying "no private data elements"
+    > - [ ] Import Files even with no ".dcm" extension if they have the valid DICM preamble.
+    > - [ ] Handle the following DICOM objects gracefully
+    > > - [ ] DICOM Datasets
+    > > - [ ] Structured Reports
+    > > - [ ] DICOM DIR
+    > - [ ] Handle the following attributes gracefully
+    > > - [ ] parametric map storage
+    > > - [ ] Color Palettes
+ 
+
+
+- BONUS FEATURES TO IMPLEMENT
+  - [ ] Network Capabilities:
+   > - [ ] Pull:
+     Ability to pull data down from a PACS(Picture Archiving and Communication Systems) Server by specifying IP address and port.
+   > - [ ] Push:
+     Ability to push data up to a PACS(Picture Archiving and Communication Systems) Server by specifying IP address and port.
+  - [ ] TLS Layer:
+   > Add TLS to Networking Capabilities
+  - [ ] Export Pixel Array:
+    > Ability to Export Pixel Array to 
+      > - [ ] PNG
+      > - [ ] JEG
+  - [ ] Complete SQL Database:
+   > Right now the SQL database only contains elements from the "basic proficiency" section of the DICOM standard. All columns could be scraped and stored
