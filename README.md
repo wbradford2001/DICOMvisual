@@ -29,11 +29,15 @@ DICOM(Digital Communications in Medicine) is a way of exchanging data that has b
   ```console
   cd secureDICOM
   ```
-  -Step 5: Activate environment
+  -Step 5: Build new environment from "environment.yml"
+  ```console
+  conda env create --file environment.yml --name env_from_file
+  ```
+  -Step 6: Activate new environment
   ```console
   conda activate env_from_file
   ```
-  - Step 6: Run master.py and enjoy!
+  - Step 7: Run master.py and enjoy!
   ```console
   python3 master.py
   ```
