@@ -15,10 +15,44 @@ DICOM(Digital Communications in Medicine) is a way of exchanging data that has b
 - Export your edited DICOM file to your local computer
 
 ## Instructions on how to use
-- Docker image: https://hub.docker.com/repository/docker/wjbradfo/securedicom
-- Users can pull the above image by first starting the Docker Daemon, then pulling it to their local machine: docker pull wbradfo/securedicom:prototype1
-- NOTE: this application uses a graphical user interface. Thus, to use it you need to allow docker to use your screen. This is a different process on different operating systems, so no description is given here, but note that you will need to run the container as you would any other GUI image from docker.
-- NOTE: to upload images from your computer, you must create a volume that links wherever the DICOM files are to your container
+- ### Method 1: using conda environment
+  - Step 1: Make sure Python 3 and Conda are installed on your machine
+  - Step 2: Initialize Git
+  ```consol
+  git init
+  ```
+  - Step 3: Clone the repository on your machine(this may take a while).
+  ```console
+  git clone https://github.com/wbradford2001/secureDICOM
+  ```
+  - Step 4: Navigate to the new Directory
+  ```console
+  cd secureDICOM
+  ```
+  -Step 4: Create your conda environment from "environment.yml". enter "y" when prompted.
+  ```console
+  conda env create --file environemnt.yml --name env_from_file
+  ```
+  -Step 5: Activate new environment
+  ```console
+  conda activate env_from_file
+  ```
+  - Step 6: Run master.py and enjoy!
+  ```console
+  python3 master.py
+  ```
+- ### Method 2: using Docker image
+  - Step 1: Make sure Docker is installed on your machine
+  - Step 2: Start the Docker Daemon
+  - Step 3: Pull down the Docker image onto your machine:
+    Docker image: https://hub.docker.com/repository/docker/wjbradfo/securedicom
+    ```console
+    docker pull wjbradfo/securedicom
+    ```
+  - Step 4: Run the docker container
+   NOTE: Because secureDICOM is a graphical application, you need to give the container access to your display. Because this looks different on different operating systems, no command line examples are given here. Also note that you need to create a volume that maps the local DICOM files on your computer into your Docker container.
+
+
 
 ## Tutorial
 Below is a tutorial for the basic menu buttons.
