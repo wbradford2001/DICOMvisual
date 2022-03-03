@@ -85,6 +85,7 @@ Below is a tutorial for the basic menu buttons.
 ## Task List
 - [ ] Encryption Fix:
     > Create "Encryption" Menu to help users choose which Encryption Scheme to Apply to all Elements.
+    > Create "Decrypt" Menu to help re-identify elements
 - [ ] Pixel Data Editing:
     > - [ ] Crop
     > - [ ] Make custom pixel Edits(set the value of pixels with the mouse)
